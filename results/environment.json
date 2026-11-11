@@ -1,0 +1,10 @@
+{
+  "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+  "visible_logical_cpus": 9,
+  "python": "3.12.14",
+  "sqlite": "3.53.1",
+  "architecture": "x86_64",
+  "containerized": true,
+  "cpu_pinning": false,
+  "memory_max": "8589934592"
+}

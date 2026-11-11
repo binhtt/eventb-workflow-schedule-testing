@@ -1,0 +1,21 @@
+{
+  "platform": "Rodin 3.9.0.202406100806-9b87fe13d",
+  "project": "SharedWorkflow",
+  "machine": "Resource",
+  "static_check": "accurate",
+  "generated": 24,
+  "discharged": 24,
+  "automatic": 24,
+  "manual": 0,
+  "by_type": {
+    "WD": 3,
+    "INV": 15,
+    "THM": 6
+  },
+  "tactics": "Workflow Atelier: default, PP, Atelier B PP/ML; ML forces 0-3 timeout 10000ms",
+  "parameterization": "finite nonempty REQ, CAP positive integer",
+  "proof_only_parameters": {
+    "Release": "remaining = held \u2216 {r}",
+    "Expire": "remaining = held \u2216 {r}"
+  }
+}

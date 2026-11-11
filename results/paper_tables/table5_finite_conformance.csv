@@ -1,0 +1,4 @@
+requests,capacity,states,enabled_transitions,rejected_attempts,all_attempts,complete,seconds
+1,1,13,26,78,104,True,0.09119243500026641
+2,1,133,412,1716,2128,True,0.8741808899994794
+3,2,1981,10806,36738,47544,True,24.438875881000058

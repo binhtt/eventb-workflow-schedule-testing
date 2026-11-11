@@ -1,0 +1,9 @@
+method,budget,eligible_trials,conformance,audit,combined
+Model-derived,1,550,314,307,314
+Model-derived,4,550,492,485,492
+Model-derived,8,550,532,530,532
+Model-derived,16,550,550,550,550
+Random,1,550,290,280,290
+Random,4,550,488,480,488
+Random,8,550,536,530,536
+Random,16,550,550,546,550

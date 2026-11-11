@@ -1,0 +1,38 @@
+nominal raw [300, 300, 300] eligible [(1, [0, 0, 0]), (4, [0, 0, 0]), (8, [0, 0, 0]), (16, [0, 0, 0])]
+paired [(1, 0, 0), (4, 0, 0), (16, 0, 0)]
+random raw [1299, 1295, 1299] eligible [(1, [290, 280, 290]), (4, [488, 480, 488]), (8, [536, 530, 536]), (16, [550, 546, 550])]
+paired [(1, 10, 0), (4, 8, 0), (16, 4, 0)]
+model_conflicts raw [1300, 1300, 1300] eligible [(1, [314, 307, 314]), (4, [492, 485, 492]), (8, [532, 530, 532]), (16, [550, 550, 550])]
+paired [(1, 7, 0), (4, 7, 0), (16, 0, 0)]
+canonical_independence raw [768, 754, 768] eligible [(1, [274, 269, 274]), (4, [274, 269, 274]), (8, [274, 269, 274]), (16, [274, 269, 274])]
+paired [(1, 5, 0), (4, 5, 0), (16, 5, 0)]
+2 1 model_conflicts distinct 16 16 prefix 0 0.0 0
+candidate_objectives 46 46.0 46
+attempted_objectives 23 30.0 37
+feasible_objectives 16 16.0 16
+feasible_sample min median max 24 24.0 24 union 24
+targeted_pairs min median max 16 16.0 16 union 24
+2 1 canonical_independence distinct 16 16 prefix 25 27.0 28
+2 1 random distinct 16 16 prefix 0 0.0 0
+4 2 model_conflicts distinct 16 16 prefix 0 0.0 0
+candidate_objectives 140 140.0 140
+attempted_objectives 16 20.5 26
+feasible_objectives 16 16.0 16
+feasible_sample min median max 112 112.0 112 union 112
+targeted_pairs min median max 16 16.0 16 union 112
+4 2 canonical_independence distinct 16 16 prefix 57 59.0 60
+4 2 random distinct 16 16 prefix 0 0.0 0
+8 3 model_conflicts distinct 16 16 prefix 0 0.0 0
+candidate_objectives 472 472.0 472
+attempted_objectives 16 18.0 22
+feasible_objectives 16 16.0 16
+feasible_sample min median max 416 416.0 416 union 416
+targeted_pairs min median max 16 16.0 16 union 364
+8 3 canonical_independence distinct 16 16 prefix 121 123.0 124
+8 3 random distinct 16 16 prefix 0 0.0 0
+2 1 model_conflicts time curve [(10, 122, 150), (25, 150, 150), (50, 150, 150), (100, 150, 150), (200, 150, 150)]
+2 1 random time curve [(10, 143, 150), (25, 146, 150), (50, 146, 150), (100, 146, 150), (200, 146, 150)]
+4 2 model_conflicts time curve [(10, 0, 200), (25, 196, 200), (50, 200, 200), (100, 200, 200), (200, 200, 200)]
+4 2 random time curve [(10, 190, 200), (25, 200, 200), (50, 200, 200), (100, 200, 200), (200, 200, 200)]
+8 3 model_conflicts time curve [(10, 0, 200), (25, 0, 200), (50, 0, 200), (100, 200, 200), (200, 200, 200)]
+8 3 random time curve [(10, 0, 200), (25, 173, 200), (50, 199, 200), (100, 200, 200), (200, 200, 200)]

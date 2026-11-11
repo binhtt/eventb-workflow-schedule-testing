@@ -1,0 +1,3796 @@
+{
+  "source": "Resource.bum",
+  "guards": {
+    "INITIALISATION": {},
+    "Reserve": {
+      "g0": "r \u2208 REQ",
+      "g1": "r \u2209 held",
+      "g2": "r \u2209 closed",
+      "g3": "free > 0"
+    },
+    "Execute": {
+      "g0": "r \u2208 REQ",
+      "g1": "v \u2208 {0, 1}",
+      "g2": "r \u2208 held",
+      "g3": "r \u2209 effected",
+      "g4": "(r \u2208 moved \u21d2 v = 1)",
+      "g5": "(r \u2209 moved \u21d2 v = 0)"
+    },
+    "Transfer": {
+      "g0": "r \u2208 REQ",
+      "g1": "r \u2208 held",
+      "g2": "r \u2209 moved"
+    },
+    "Acknowledge": {
+      "g0": "r \u2208 REQ",
+      "g1": "v \u2208 {0, 1}",
+      "g2": "r \u2208 effected",
+      "g3": "(r \u2208 moved \u21d2 v = 1)",
+      "g4": "(r \u2209 moved \u21d2 v = 0)"
+    },
+    "Release": {
+      "g0": "r \u2208 REQ",
+      "g1": "r \u2208 held"
+    },
+    "Expire": {
+      "g0": "r \u2208 REQ",
+      "g1": "r \u2208 held"
+    }
+  },
+  "schema_accesses": {
+    "Reserve": {
+      "guard_reads": [
+        "closed",
+        "free",
+        "held"
+      ],
+      "action_writes": [
+        "free",
+        "held"
+      ]
+    },
+    "Execute": {
+      "guard_reads": [
+        "effected",
+        "held",
+        "moved"
+      ],
+      "action_writes": [
+        "effected"
+      ]
+    },
+    "Transfer": {
+      "guard_reads": [
+        "held",
+        "moved"
+      ],
+      "action_writes": [
+        "moved"
+      ]
+    },
+    "Acknowledge": {
+      "guard_reads": [
+        "effected",
+        "moved"
+      ],
+      "action_writes": [
+        "acked"
+      ]
+    },
+    "Release": {
+      "guard_reads": [
+        "held"
+      ],
+      "action_writes": [
+        "closed",
+        "free",
+        "held"
+      ]
+    },
+    "Expire": {
+      "guard_reads": [
+        "held"
+      ],
+      "action_writes": [
+        "closed",
+        "free",
+        "held"
+      ]
+    }
+  },
+  "request_count": 4,
+  "objectives": [
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        0,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free",
+        "held"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        1,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        1,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        1,
+        "release"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          1,
+          "execute",
+          "apply"
+        ],
+        [
+          1,
+          "execute",
+          "probe"
+        ],
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        1,
+        "expiry"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        2,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        2,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        2,
+        "release"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          2,
+          "execute",
+          "apply"
+        ],
+        [
+          2,
+          "execute",
+          "probe"
+        ],
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        2,
+        "expiry"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "release"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          3,
+          "execute",
+          "apply"
+        ],
+        [
+          3,
+          "execute",
+          "probe"
+        ],
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "expiry"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        0,
+        "execute"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        0,
+        "retry_execute"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        0,
+        "handoff"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        0,
+        "release"
+      ],
+      "variables": [
+        "closed",
+        "free",
+        "held"
+      ],
+      "prefix": [
+        [
+          0,
+          "execute",
+          "apply"
+        ],
+        [
+          0,
+          "execute",
+          "probe"
+        ],
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        0,
+        "expiry"
+      ],
+      "variables": [
+        "closed",
+        "free",
+        "held"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        1,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        1,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        1,
+        "release"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          1,
+          "execute",
+          "apply"
+        ],
+        [
+          1,
+          "execute",
+          "probe"
+        ],
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        1,
+        "expiry"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "release"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          2,
+          "execute",
+          "apply"
+        ],
+        [
+          2,
+          "execute",
+          "probe"
+        ],
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "expiry"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "release"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          3,
+          "execute",
+          "apply"
+        ],
+        [
+          3,
+          "execute",
+          "probe"
+        ],
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "expiry"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "execute"
+      ],
+      "b": [
+        0,
+        "retry_execute"
+      ],
+      "variables": [
+        "effected"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "execute"
+      ],
+      "b": [
+        0,
+        "handoff"
+      ],
+      "variables": [
+        "moved"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "execute"
+      ],
+      "b": [
+        0,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_execute"
+      ],
+      "b": [
+        0,
+        "handoff"
+      ],
+      "variables": [
+        "moved"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_execute"
+      ],
+      "b": [
+        0,
+        "ack"
+      ],
+      "variables": [
+        "effected"
+      ],
+      "prefix": [
+        [
+          0,
+          "execute",
+          "apply"
+        ],
+        [
+          0,
+          "execute",
+          "probe"
+        ],
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_execute"
+      ],
+      "b": [
+        0,
+        "release"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          0,
+          "execute",
+          "apply"
+        ],
+        [
+          0,
+          "execute",
+          "probe"
+        ],
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "retry_execute"
+      ],
+      "b": [
+        0,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "handoff"
+      ],
+      "b": [
+        0,
+        "ack"
+      ],
+      "variables": [
+        "moved"
+      ],
+      "prefix": [
+        [
+          0,
+          "execute",
+          "apply"
+        ],
+        [
+          0,
+          "execute",
+          "probe"
+        ],
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "handoff"
+      ],
+      "b": [
+        0,
+        "release"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          0,
+          "execute",
+          "apply"
+        ],
+        [
+          0,
+          "execute",
+          "probe"
+        ],
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "handoff"
+      ],
+      "b": [
+        0,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "release"
+      ],
+      "b": [
+        0,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          0,
+          "execute",
+          "apply"
+        ],
+        [
+          0,
+          "execute",
+          "probe"
+        ],
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "release"
+      ],
+      "b": [
+        1,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          0,
+          "execute",
+          "apply"
+        ],
+        [
+          0,
+          "execute",
+          "probe"
+        ],
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "release"
+      ],
+      "b": [
+        1,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          0,
+          "execute",
+          "apply"
+        ],
+        [
+          0,
+          "execute",
+          "probe"
+        ],
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "release"
+      ],
+      "b": [
+        2,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          0,
+          "execute",
+          "apply"
+        ],
+        [
+          0,
+          "execute",
+          "probe"
+        ],
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "release"
+      ],
+      "b": [
+        2,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          0,
+          "execute",
+          "apply"
+        ],
+        [
+          0,
+          "execute",
+          "probe"
+        ],
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "release"
+      ],
+      "b": [
+        3,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          0,
+          "execute",
+          "apply"
+        ],
+        [
+          0,
+          "execute",
+          "probe"
+        ],
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "release"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          0,
+          "execute",
+          "apply"
+        ],
+        [
+          0,
+          "execute",
+          "probe"
+        ],
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "expiry"
+      ],
+      "b": [
+        1,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "expiry"
+      ],
+      "b": [
+        1,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "expiry"
+      ],
+      "b": [
+        2,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "expiry"
+      ],
+      "b": [
+        2,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "expiry"
+      ],
+      "b": [
+        3,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        0,
+        "expiry"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          0,
+          "reserve",
+          "apply"
+        ],
+        [
+          0,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "reserve"
+      ],
+      "b": [
+        1,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free",
+        "held"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        1,
+        "reserve"
+      ],
+      "b": [
+        2,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        1,
+        "reserve"
+      ],
+      "b": [
+        2,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        1,
+        "reserve"
+      ],
+      "b": [
+        2,
+        "release"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          2,
+          "execute",
+          "apply"
+        ],
+        [
+          2,
+          "execute",
+          "probe"
+        ],
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "reserve"
+      ],
+      "b": [
+        2,
+        "expiry"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        1,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        1,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "release"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          3,
+          "execute",
+          "apply"
+        ],
+        [
+          3,
+          "execute",
+          "probe"
+        ],
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "expiry"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        1,
+        "execute"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        1,
+        "retry_execute"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        1,
+        "handoff"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        1,
+        "release"
+      ],
+      "variables": [
+        "closed",
+        "free",
+        "held"
+      ],
+      "prefix": [
+        [
+          1,
+          "execute",
+          "apply"
+        ],
+        [
+          1,
+          "execute",
+          "probe"
+        ],
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        1,
+        "expiry"
+      ],
+      "variables": [
+        "closed",
+        "free",
+        "held"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "release"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          2,
+          "execute",
+          "apply"
+        ],
+        [
+          2,
+          "execute",
+          "probe"
+        ],
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "expiry"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "release"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          3,
+          "execute",
+          "apply"
+        ],
+        [
+          3,
+          "execute",
+          "probe"
+        ],
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "expiry"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "execute"
+      ],
+      "b": [
+        1,
+        "retry_execute"
+      ],
+      "variables": [
+        "effected"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "execute"
+      ],
+      "b": [
+        1,
+        "handoff"
+      ],
+      "variables": [
+        "moved"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "execute"
+      ],
+      "b": [
+        1,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_execute"
+      ],
+      "b": [
+        1,
+        "handoff"
+      ],
+      "variables": [
+        "moved"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_execute"
+      ],
+      "b": [
+        1,
+        "ack"
+      ],
+      "variables": [
+        "effected"
+      ],
+      "prefix": [
+        [
+          1,
+          "execute",
+          "apply"
+        ],
+        [
+          1,
+          "execute",
+          "probe"
+        ],
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_execute"
+      ],
+      "b": [
+        1,
+        "release"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          1,
+          "execute",
+          "apply"
+        ],
+        [
+          1,
+          "execute",
+          "probe"
+        ],
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "retry_execute"
+      ],
+      "b": [
+        1,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "handoff"
+      ],
+      "b": [
+        1,
+        "ack"
+      ],
+      "variables": [
+        "moved"
+      ],
+      "prefix": [
+        [
+          1,
+          "execute",
+          "apply"
+        ],
+        [
+          1,
+          "execute",
+          "probe"
+        ],
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "handoff"
+      ],
+      "b": [
+        1,
+        "release"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          1,
+          "execute",
+          "apply"
+        ],
+        [
+          1,
+          "execute",
+          "probe"
+        ],
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "handoff"
+      ],
+      "b": [
+        1,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "release"
+      ],
+      "b": [
+        1,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          1,
+          "execute",
+          "apply"
+        ],
+        [
+          1,
+          "execute",
+          "probe"
+        ],
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "release"
+      ],
+      "b": [
+        2,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          1,
+          "execute",
+          "apply"
+        ],
+        [
+          1,
+          "execute",
+          "probe"
+        ],
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "release"
+      ],
+      "b": [
+        2,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          1,
+          "execute",
+          "apply"
+        ],
+        [
+          1,
+          "execute",
+          "probe"
+        ],
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "release"
+      ],
+      "b": [
+        3,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          1,
+          "execute",
+          "apply"
+        ],
+        [
+          1,
+          "execute",
+          "probe"
+        ],
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "release"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          1,
+          "execute",
+          "apply"
+        ],
+        [
+          1,
+          "execute",
+          "probe"
+        ],
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "expiry"
+      ],
+      "b": [
+        2,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "expiry"
+      ],
+      "b": [
+        2,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "expiry"
+      ],
+      "b": [
+        3,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        1,
+        "expiry"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          1,
+          "reserve",
+          "apply"
+        ],
+        [
+          1,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "reserve"
+      ],
+      "b": [
+        2,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free",
+        "held"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        2,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        2,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        2,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "release"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          3,
+          "execute",
+          "apply"
+        ],
+        [
+          3,
+          "execute",
+          "probe"
+        ],
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "expiry"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "execute"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "retry_execute"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "handoff"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "release"
+      ],
+      "variables": [
+        "closed",
+        "free",
+        "held"
+      ],
+      "prefix": [
+        [
+          2,
+          "execute",
+          "apply"
+        ],
+        [
+          2,
+          "execute",
+          "probe"
+        ],
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "retry_reserve"
+      ],
+      "b": [
+        2,
+        "expiry"
+      ],
+      "variables": [
+        "closed",
+        "free",
+        "held"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        2,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        2,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "release"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          3,
+          "execute",
+          "apply"
+        ],
+        [
+          3,
+          "execute",
+          "probe"
+        ],
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "expiry"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "execute"
+      ],
+      "b": [
+        2,
+        "retry_execute"
+      ],
+      "variables": [
+        "effected"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "execute"
+      ],
+      "b": [
+        2,
+        "handoff"
+      ],
+      "variables": [
+        "moved"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "execute"
+      ],
+      "b": [
+        2,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "retry_execute"
+      ],
+      "b": [
+        2,
+        "handoff"
+      ],
+      "variables": [
+        "moved"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "retry_execute"
+      ],
+      "b": [
+        2,
+        "ack"
+      ],
+      "variables": [
+        "effected"
+      ],
+      "prefix": [
+        [
+          2,
+          "execute",
+          "apply"
+        ],
+        [
+          2,
+          "execute",
+          "probe"
+        ],
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "retry_execute"
+      ],
+      "b": [
+        2,
+        "release"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          2,
+          "execute",
+          "apply"
+        ],
+        [
+          2,
+          "execute",
+          "probe"
+        ],
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "retry_execute"
+      ],
+      "b": [
+        2,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "handoff"
+      ],
+      "b": [
+        2,
+        "ack"
+      ],
+      "variables": [
+        "moved"
+      ],
+      "prefix": [
+        [
+          2,
+          "execute",
+          "apply"
+        ],
+        [
+          2,
+          "execute",
+          "probe"
+        ],
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "handoff"
+      ],
+      "b": [
+        2,
+        "release"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          2,
+          "execute",
+          "apply"
+        ],
+        [
+          2,
+          "execute",
+          "probe"
+        ],
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "handoff"
+      ],
+      "b": [
+        2,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "release"
+      ],
+      "b": [
+        2,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          2,
+          "execute",
+          "apply"
+        ],
+        [
+          2,
+          "execute",
+          "probe"
+        ],
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "release"
+      ],
+      "b": [
+        3,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          2,
+          "execute",
+          "apply"
+        ],
+        [
+          2,
+          "execute",
+          "probe"
+        ],
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "release"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          2,
+          "execute",
+          "apply"
+        ],
+        [
+          2,
+          "execute",
+          "probe"
+        ],
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "expiry"
+      ],
+      "b": [
+        3,
+        "reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        2,
+        "expiry"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free"
+      ],
+      "prefix": [
+        [
+          2,
+          "reserve",
+          "apply"
+        ],
+        [
+          2,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "reserve"
+      ],
+      "b": [
+        3,
+        "retry_reserve"
+      ],
+      "variables": [
+        "free",
+        "held"
+      ],
+      "prefix": []
+    },
+    {
+      "a": [
+        3,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "execute"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "retry_execute"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "handoff"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "release"
+      ],
+      "variables": [
+        "closed",
+        "free",
+        "held"
+      ],
+      "prefix": [
+        [
+          3,
+          "execute",
+          "apply"
+        ],
+        [
+          3,
+          "execute",
+          "probe"
+        ],
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "retry_reserve"
+      ],
+      "b": [
+        3,
+        "expiry"
+      ],
+      "variables": [
+        "closed",
+        "free",
+        "held"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "execute"
+      ],
+      "b": [
+        3,
+        "retry_execute"
+      ],
+      "variables": [
+        "effected"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "execute"
+      ],
+      "b": [
+        3,
+        "handoff"
+      ],
+      "variables": [
+        "moved"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "execute"
+      ],
+      "b": [
+        3,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "retry_execute"
+      ],
+      "b": [
+        3,
+        "handoff"
+      ],
+      "variables": [
+        "moved"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "retry_execute"
+      ],
+      "b": [
+        3,
+        "ack"
+      ],
+      "variables": [
+        "effected"
+      ],
+      "prefix": [
+        [
+          3,
+          "execute",
+          "apply"
+        ],
+        [
+          3,
+          "execute",
+          "probe"
+        ],
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "retry_execute"
+      ],
+      "b": [
+        3,
+        "release"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          3,
+          "execute",
+          "apply"
+        ],
+        [
+          3,
+          "execute",
+          "probe"
+        ],
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "retry_execute"
+      ],
+      "b": [
+        3,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "handoff"
+      ],
+      "b": [
+        3,
+        "ack"
+      ],
+      "variables": [
+        "moved"
+      ],
+      "prefix": [
+        [
+          3,
+          "execute",
+          "apply"
+        ],
+        [
+          3,
+          "execute",
+          "probe"
+        ],
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "handoff"
+      ],
+      "b": [
+        3,
+        "release"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          3,
+          "execute",
+          "apply"
+        ],
+        [
+          3,
+          "execute",
+          "probe"
+        ],
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "handoff"
+      ],
+      "b": [
+        3,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    },
+    {
+      "a": [
+        3,
+        "release"
+      ],
+      "b": [
+        3,
+        "expiry"
+      ],
+      "variables": [
+        "held"
+      ],
+      "prefix": [
+        [
+          3,
+          "execute",
+          "apply"
+        ],
+        [
+          3,
+          "execute",
+          "probe"
+        ],
+        [
+          3,
+          "reserve",
+          "apply"
+        ],
+        [
+          3,
+          "reserve",
+          "probe"
+        ]
+      ]
+    }
+  ]
+}

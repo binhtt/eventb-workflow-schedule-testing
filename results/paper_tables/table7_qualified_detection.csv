@@ -1,0 +1,9 @@
+requests,capacity,method,eligible_trials,budget4,budget16
+2,1,Random,150,94,146
+4,2,Random,200,189,200
+8,3,Random,200,197,200
+Total,,Random,550,480,546
+2,1,Model-derived,150,103,150
+4,2,Model-derived,200,186,200
+8,3,Model-derived,200,196,200
+Total,,Model-derived,550,485,550

@@ -1,0 +1,955 @@
+#!/usr/bin/env bash
+# Build Event-B models using Rodin's headless static checker.
+#
+# This script:
+# 1. Extracts .zip archives into a Rodin workspace directory
+# 2. Generates .project files where missing (needed for Rodin to recognize projects)
+# 3. Compiles a temporary OSGi plugin that programmatically imports and
+#    builds all projects in the workspace, registered in a throwaway
+#    Equinox configuration area (the Rodin install is never modified)
+# 4. Runs Rodin headless with the plugin
+# 5. Repackages the archives with the generated .bcm/.bcc artifacts
+#
+# Prerequisites:
+# - Rodin IDE installed (Eclipse-based)
+# - Java 21+ (for compiling the OSGi plugin)
+#
+# Usage: ./rodin-headless.sh [--mode MODE] [--strict] [--auto-tactics on|off]
+#            [--tactic-profile NAME] [<rodin-dir> <models-dir>] [model1.zip ...]
+#   If no specific models are listed, all .zip files in models-dir are processed.
+#   Paths can also be set via RODIN_DIR and MODELS_DIR environment variables.
+#   RODIN_BUILD_TIMEOUT defaults to 60m; set to off to disable.
+#   MODE: build (default), check, prove, validate, autoprove
+#   --strict: exit non-zero when any component fails the static check
+#   --auto-tactics off: skip Rodin's automatic prover during the build
+#   --tactic-profile NAME: use a named auto-tactic profile instead of
+#     Eclipse's default, e.g. "Default Auto Tactic with SMT". Unknown
+#     names are rejected, listing what is available.
+#   --recalculate: with autoprove, re-run the auto-prover on every PO
+#   --purge-proofs: drop stored proofs/statuses before building
+#
+# Examples:
+#   ./rodin-headless.sh /home/work/bin/rodin . evbt_bridge.zip evbt_elevator.zip
+#   RODIN_DIR=/opt/rodin MODELS_DIR=/models ./rodin-headless.sh model.zip
+#   docker run --rm -v "$(pwd):/models" ghcr.io/eventb-rossi/rodin-headless model.zip
+
+set -euo pipefail
+
+# Resolve the directory holding the shared library and helper scripts.
+# Order: a RODIN_HEADLESS_LIBEXEC override; the build-time sentinel that
+# `make install` rewrites to $libexecdir/rodin-headless; otherwise the
+# script's own directory — the flat checkout and the Docker image keep
+# every script beside the library. A sentinel left literal (source tree)
+# or pointing nowhere falls back to dirname "$0".
+: "${RODIN_HEADLESS_LIBEXEC:=__RODIN_HEADLESS_LIBEXEC__}"
+if [ ! -f "$RODIN_HEADLESS_LIBEXEC/rodin-headless-lib.sh" ]; then
+    RODIN_HEADLESS_LIBEXEC="$(cd "$(dirname "$0")" && pwd)"
+fi
+if [ ! -f "$RODIN_HEADLESS_LIBEXEC/rodin-headless-lib.sh" ]; then
+    echo "ERROR: cannot find rodin-headless-lib.sh in $RODIN_HEADLESS_LIBEXEC" >&2
+    echo "       Set RODIN_HEADLESS_LIBEXEC to the directory that holds it (the package's libexec/rodin-headless)." >&2
+    exit 1
+fi
+# Shared shell helpers used by the script and regression tests.
+# shellcheck source=rodin-headless-lib.sh
+. "$RODIN_HEADLESS_LIBEXEC/rodin-headless-lib.sh"
+
+# Parse --mode/--strict/--auto-tactics/--tactic-profile flags; they may appear anywhere
+# among the positional arguments, and an unknown option fails fast
+# instead of falling through to basename as a bogus archive name.
+BUILD_MODE="build"
+STRICT_MODE=false
+AUTO_TACTICS="on"
+TACTIC_PROFILE=""
+RECALCULATE=false
+PURGE_PROOFS=false
+POSITIONAL_ARGS=()
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --mode)   BUILD_MODE="${2:-build}"; shift 2 ;;
+        --strict) STRICT_MODE=true; shift ;;
+        --recalculate)  RECALCULATE=true; shift ;;
+        --purge-proofs) PURGE_PROOFS=true; shift ;;
+        --auto-tactics)
+            case "${2:-}" in
+                on | off) AUTO_TACTICS="$2" ;;
+                *)
+                    echo "ERROR: --auto-tactics takes 'on' or 'off' (got '${2:-}')" >&2
+                    exit 1
+                    ;;
+            esac
+            shift 2
+            ;;
+        --tactic-profile)
+            if [ -z "${2:-}" ]; then
+                echo "ERROR: --tactic-profile takes a profile name" >&2
+                exit 1
+            fi
+            TACTIC_PROFILE="$2"
+            shift 2
+            ;;
+        --*)
+            echo "ERROR: unknown option '$1'" >&2
+            exit 1
+            ;;
+        *)        POSITIONAL_ARGS+=("$1"); shift ;;
+    esac
+done
+set -- ${POSITIONAL_ARGS[@]+"${POSITIONAL_ARGS[@]}"}
+
+# Validated after the loop: --mode may appear after --recalculate.
+if [ "$RECALCULATE" = true ] && [ "$BUILD_MODE" != "autoprove" ]; then
+    echo "ERROR: --recalculate is only valid with the autoprove command" >&2
+    exit 1
+fi
+
+# Auto-start virtual framebuffer if no display is available (e.g., Docker)
+if [ -z "${DISPLAY:-}" ] && command -v Xvfb >/dev/null 2>&1; then
+    export DISPLAY=:99
+    Xvfb "$DISPLAY" -screen 0 1024x768x24 -nolisten tcp &
+    XVFB_PID=$!
+    sleep 1
+fi
+
+# Registered before any validation exit so an early failure still kills
+# the Xvfb we just started. Everything a run creates lives in its own
+# temp directories — the Rodin install is never written to, so even a
+# hard kill (which skips this trap) leaves the install pristine.
+WORKSPACE=""
+PLUGIN_DIR=""
+CONFIG_AREA=""
+cleanup() {
+    # rm -rf treats empty operands as already-removed, so the
+    # not-yet-set case needs no guard.
+    rm -rf "$WORKSPACE" "$PLUGIN_DIR" "$CONFIG_AREA"
+    [ -n "${XVFB_PID:-}" ] && kill "$XVFB_PID" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+# Resolve RODIN_DIR and MODELS_DIR from positional args or environment variables
+if [ $# -ge 2 ] && [ -d "${1:-}" ] && [ -d "${2:-}" ]; then
+    RODIN_DIR="$1"
+    MODELS_DIR="$(cd "$2" && pwd)"
+    shift 2
+else
+    RODIN_DIR="${RODIN_DIR:-}"
+    MODELS_DIR="${MODELS_DIR:+$(cd "$MODELS_DIR" && pwd)}"
+fi
+
+if [ -z "$RODIN_DIR" ] || [ -z "$MODELS_DIR" ]; then
+    echo "Usage: $0 [--mode MODE] [--strict] [--auto-tactics on|off] [--tactic-profile NAME] [<rodin-dir> <models-dir>] [model1.zip ...]" >&2
+    echo "  Or set RODIN_DIR and MODELS_DIR environment variables." >&2
+    exit 1
+fi
+
+# Step 4 writes repackaged zips back into MODELS_DIR in every mode and
+# runtime; a read-only directory would only fail after the whole
+# build. Checked here as the effective uid, which also covers
+# container --user runs against the bind mount.
+if [ ! -w "$MODELS_DIR" ]; then
+    echo "ERROR: models directory $MODELS_DIR is not writable; repackaging after the build would fail" >&2
+    exit 1
+fi
+
+# The directory with the Eclipse layout: RODIN_DIR itself on Linux,
+# Contents/Eclipse inside the macOS app bundle.
+RODIN_HOME="$(resolve_rodin_home_or_root "$RODIN_DIR")"
+
+# Determine which archives to process
+if [ $# -gt 0 ]; then
+    SELECTED_ZIPS=("$@")
+else
+    shopt -s nullglob
+    SELECTED_ZIPS=("$MODELS_DIR"/*.zip)
+    shopt -u nullglob
+fi
+
+ZIPS=()
+MISSING_ZIPS=()
+# ${arr[@]+...} keeps empty-array expansions alive under bash 3.2's
+# set -u (stock macOS), where a bare "${arr[@]}" is fatal.
+for zip in ${SELECTED_ZIPS[@]+"${SELECTED_ZIPS[@]}"}; do
+    zip=$(basename "$zip")
+    if [ -f "$MODELS_DIR/$zip" ]; then
+        ZIPS+=("$zip")
+    else
+        MISSING_ZIPS+=("$zip")
+    fi
+done
+
+for zip in ${MISSING_ZIPS[@]+"${MISSING_ZIPS[@]}"}; do
+    echo "  SKIP: $zip not found" >&2
+done
+
+if [ ${#ZIPS[@]} -eq 0 ]; then
+    if [ $# -gt 0 ]; then
+        echo "ERROR: None of the requested archives were found in $MODELS_DIR" >&2
+    else
+        echo "ERROR: No .zip archives found in $MODELS_DIR" >&2
+    fi
+    exit 1
+fi
+
+RODIN_PLUGINS="$RODIN_HOME/plugins"
+
+# The rewrite-oracle mode never touches a workspace, Equinox, or ProB:
+# it compiles a tiny plain-JVM driver against the AST and sequent
+# prover jars and answers rewrite requests line by line. It branches
+# off here, after jar resolution but before the ProB requirement.
+run_rewrite_oracle() {
+    if [ $# -ne 1 ]; then
+        echo "ERROR: rewrite-oracle takes exactly one request file (in the models directory)" >&2
+        exit 1
+    fi
+    local request_file="$MODELS_DIR/$1"
+    if [ ! -f "$request_file" ]; then
+        echo "ERROR: request file $request_file not found" >&2
+        exit 1
+    fi
+
+    PLUGIN_DIR=$(rh_mktemp_dir)
+    cat > "$PLUGIN_DIR/RewriteOracle.java" << 'JAVA'
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.IParseResult;
+import org.eventb.core.ast.ITypeCheckResult;
+import org.eventb.core.ast.ITypeEnvironmentBuilder;
+import org.eventb.core.ast.Predicate;
+import org.eventb.internal.core.seqprover.eventbExtensions.rewriters.AutoRewriterImpl;
+import org.eventb.internal.core.seqprover.eventbExtensions.rewriters.AutoRewrites;
+
+/**
+ * Answers automatic-rewriter requests, one per input line:
+ *
+ *   [name=Type;name=Type...] TAB predicate
+ *
+ * For each request the predicate is parsed and type-checked in the
+ * given environment, then rewritten to the AutoRewriterImpl L5
+ * fixpoint exactly as AbstractAutoRewrites does. The response line is
+ *
+ *   OK TAB rewritten-predicate TAB rule,rule,...
+ *
+ * with the predicate in its typed spelling (toStringWithTypes, so a
+ * result whose bound identifiers or empty sets lost their typing
+ * context still parses unambiguously) and the fired SIMP_*\/DEF_*
+ * names harvested from the rewriter's DEBUG trace (auto-flattening
+ * steps leave no trace, so the rule list is best-effort while the
+ * predicate is exact), or
+ *
+ *   ERR TAB message
+ */
+public class RewriteOracle {
+    public static void main(String[] args) throws Exception {
+        PrintStream realOut =
+                new PrintStream(new FileOutputStream(FileDescriptor.out), true, "UTF-8");
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(new FileInputStream(args[0]), StandardCharsets.UTF_8));
+        AutoRewriterImpl.DEBUG = true;
+        FormulaFactory ff = FormulaFactory.getDefault();
+        String line;
+        while ((line = in.readLine()) != null) {
+            if (line.isEmpty()) {
+                continue;
+            }
+            int tab = line.indexOf('\t');
+            String envPart = tab < 0 ? "" : line.substring(0, tab);
+            String predPart = tab < 0 ? line : line.substring(tab + 1);
+            ByteArrayOutputStream trace = new ByteArrayOutputStream();
+            try {
+                ITypeEnvironmentBuilder env = ff.makeTypeEnvironment();
+                if (!envPart.isEmpty()) {
+                    for (String pair : envPart.split(";")) {
+                        int eq = pair.indexOf('=');
+                        String name = pair.substring(0, eq);
+                        IParseResult tr = ff.parseType(pair.substring(eq + 1));
+                        if (tr.hasProblem()) {
+                            throw new Exception("type of " + name + ": " + tr.getProblems());
+                        }
+                        env.addName(name, tr.getParsedType());
+                    }
+                }
+                IParseResult pr = ff.parsePredicate(predPart, null);
+                if (pr.hasProblem()) {
+                    throw new Exception("parse: " + pr.getProblems());
+                }
+                Predicate pred = pr.getParsedPredicate();
+                ITypeCheckResult tc = pred.typeCheck(env);
+                if (tc.hasProblem()) {
+                    throw new Exception("typecheck: " + tc.getProblems());
+                }
+                System.setOut(new PrintStream(trace, true, "UTF-8"));
+                AutoRewriterImpl rewriter = new AutoRewriterImpl(AutoRewrites.Level.L5);
+                Predicate current = pred;
+                while (true) {
+                    Predicate next = current.rewrite(rewriter);
+                    if (next == current) {
+                        break;
+                    }
+                    current = next;
+                }
+                System.setOut(realOut);
+                StringBuilder rules = new StringBuilder();
+                for (String t : trace.toString("UTF-8").split("\n")) {
+                    int open = t.lastIndexOf("   (");
+                    if (!t.startsWith("AutoRewriter: ") || open < 0 || !t.endsWith(")")) {
+                        continue;
+                    }
+                    for (String r : t.substring(open + 4, t.length() - 1).split(" \\| ")) {
+                        if (rules.length() > 0) {
+                            rules.append(',');
+                        }
+                        rules.append(r);
+                    }
+                }
+                realOut.println("OK\t" + current.toStringWithTypes() + "\t" + rules);
+            } catch (Throwable e) {
+                System.setOut(realOut);
+                String msg = String.valueOf(e);
+                realOut.println("ERR\t" + msg.replace('\t', ' ').replace('\n', ' '));
+            }
+        }
+        realOut.flush();
+    }
+}
+JAVA
+
+    local ORACLE_CP
+    ORACLE_CP="$(resolve_latest_jar "$RODIN_PLUGINS" org.eventb.core.ast)"
+    ORACLE_CP="$ORACLE_CP:$(resolve_latest_jar "$RODIN_PLUGINS" org.eventb.core.seqprover)"
+    javac -cp "$ORACLE_CP" -d "$PLUGIN_DIR" "$PLUGIN_DIR/RewriteOracle.java"
+    java -cp "$ORACLE_CP:$PLUGIN_DIR" RewriteOracle "$request_file"
+}
+
+if [ "$BUILD_MODE" = "rewrite-oracle" ]; then
+    run_rewrite_oracle "${ZIPS[@]}"
+    exit $?
+fi
+
+# Fail in seconds instead of hanging for the whole build timeout: the
+# SWT launch in step 3 blocks on WindowServer when macOS has no
+# logged-in graphical session (ssh, CI, cron).
+if ! darwin_gui_session_ok; then
+    echo "ERROR: native Rodin on macOS needs a logged-in graphical (Aqua) session" >&2
+    echo "Run from a desktop session, run via the rodin-headless wrapper (it falls back to a container), or set RODIN_SKIP_GUI_CHECK=1 to try anyway" >&2
+    exit 1
+fi
+
+WORKSPACE=$(rh_mktemp_dir)
+PLUGIN_DIR=$(rh_mktemp_dir)
+CONFIG_AREA=$(rh_mktemp_dir)
+case "$PLUGIN_DIR" in
+    *,*)
+        # bundles.info is comma-separated; a comma in the temp path
+        # would split the bundle's file: URI into extra fields.
+        echo "ERROR: temp directory '$PLUGIN_DIR' contains a comma, which bundles.info cannot represent — set TMPDIR to a comma-free path" >&2
+        exit 1
+        ;;
+esac
+RUN_ID="$(basename "$PLUGIN_DIR" | tr -cd '[:alnum:]')"
+BUNDLE_VERSION="1.0.0"
+BUNDLE_SYMBOLIC_NAME="rodinbuilder.$RUN_ID"
+BUNDLE_JAR_NAME="rodinbuilder_${RUN_ID}.jar"
+# Absolute URI: the bundle is loaded from its temp directory, never
+# copied into the install.
+BUNDLE_INFO_LINE="$BUNDLE_SYMBOLIC_NAME,$BUNDLE_VERSION,file:$PLUGIN_DIR/$BUNDLE_JAR_NAME,4,false"
+APPLICATION_ID="$BUNDLE_SYMBOLIC_NAME.headlessBuilder"
+RODIN_BUILD_TIMEOUT="${RODIN_BUILD_TIMEOUT:-60m}"
+RODIN_BUILD_TIMEOUT_KILL_AFTER="${RODIN_BUILD_TIMEOUT_KILL_AFTER:-30s}"
+# Workspace project name and archive-relative project root per
+# archive, index-parallel to ZIPS — bash 3.2 (stock macOS) has no
+# associative arrays.
+ZIP_PROJECTS=()
+ZIP_ROOTS=()
+
+echo "Workspace: $WORKSPACE"
+echo "Processing ${#ZIPS[@]} archives"
+echo
+
+# --- Step 1: Extract archives into workspace ---
+echo "=== Step 1: Extracting archives ==="
+for zip_index in "${!ZIPS[@]}"; do
+    zip="${ZIPS[$zip_index]}"
+    m="${zip%.zip}"
+
+    tmpdir=$(rh_mktemp_dir)
+    unzip -q "$MODELS_DIR/$zip" -d "$tmpdir"
+
+    # One walk serves both the root count and the source directory.
+    # Extracting the first project root keeps extraction and step 4's
+    # write-back pointed at the same directory, and skips non-project
+    # clutter (docs/, media/) that a first-top-level-dir heuristic
+    # could pick up instead of the model. First line and line count
+    # via parameter expansion — no extra processes per archive.
+    archive_roots=$(find_archive_project_roots "$tmpdir")
+    if [ -n "$archive_roots" ]; then
+        newlines=${archive_roots//[!$'\n']/}
+        project_roots=$(( ${#newlines} + 1 ))
+        srcdir=${archive_roots%%$'\n'*}
+    else
+        # No Event-B sources or .project anywhere: keep the legacy
+        # top-level-directory fallback so the failure surfaces later
+        # with a project name attached.
+        project_roots=0
+        srcdir=$(find "$tmpdir" -mindepth 1 -maxdepth 1 -type d | head -1)
+        [ -n "$srcdir" ] || srcdir="$tmpdir"
+    fi
+
+    # Determine project name for workspace directory.
+    # Priority: 1) existing .bcm source refs  2) .project <name>  3) subdir/zip name
+    projname=""
+    for bcm_file in "$srcdir"/*.bcm; do
+        [ -f "$bcm_file" ] || continue
+        projname=$(sed -n 's|.*org.eventb.core.source="/\([^/"]*\).*|\1|p' "$bcm_file" | head -1 || true)
+        [ -n "$projname" ] && break
+    done
+    if [ -z "$projname" ] && [ -f "$srcdir/.project" ]; then
+        projname=$(sed -n 's|.*<name>\([^<]*\)</name>.*|\1|p' "$srcdir/.project" | head -1 || true)
+    fi
+    # Fall back if empty or would collide with an existing workspace project
+    if [ -z "$projname" ] || [ -d "$WORKSPACE/$projname" ]; then
+        if [ "$srcdir" != "$tmpdir" ]; then
+            projname=$(basename "$srcdir")
+        else
+            projname="$m"
+        fi
+    fi
+
+    mkdir -p "$WORKSPACE/$projname"
+    (shopt -s dotglob; mv "$srcdir"/* "$WORKSPACE/$projname/")
+    rm -rf "$tmpdir"
+
+    # Generate .project if missing
+    projdir="$WORKSPACE/$projname"
+    # Purge only the workspace copy; the archive keeps its files until
+    # repackaging overwrites the regenerated ones by name. Rodin never
+    # deletes .bpr on its own ("it contains user proofs"), so a fresh
+    # re-prove has to start from an empty proof store.
+    if [ "$PURGE_PROOFS" = true ]; then
+        rm -f "$projdir"/*.bpr "$projdir"/*.bps
+    fi
+    if [ ! -f "$projdir/.project" ]; then
+        cat > "$projdir/.project" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+  <name>$projname</name>
+  <comment></comment>
+  <projects></projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.rodinp.core.rodinbuilder</name>
+      <arguments></arguments>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.rodinp.core.rodinnature</nature>
+  </natures>
+</projectDescription>
+EOF
+    fi
+    ZIP_PROJECTS[zip_index]="$projname"
+    # Step 4 re-extracts the same zip, so the project root found here
+    # is valid there as a relative path ("." for the archive root;
+    # empty = no project roots, step 4 skips the archive). Saves a
+    # second full-tree find per archive.
+    if [ "$project_roots" -gt 0 ]; then
+        ZIP_ROOTS[zip_index]=".${srcdir#"$tmpdir"}"
+    else
+        ZIP_ROOTS[zip_index]=""
+    fi
+    echo "  $m → $projname"
+    # One project per archive: extraction keeps a single project root
+    # and repackaging writes a single one back, so extra projects would
+    # be dropped silently without this notice. Strict mode promises a
+    # non-zero exit for anything that never got checked — dropped
+    # projects included — so there it is fatal.
+    if [ "$project_roots" -gt 1 ]; then
+        if [ "$STRICT_MODE" = true ]; then
+            echo "ERROR: $zip contains $project_roots project roots; strict mode refuses to drop the extras (one project per archive)" >&2
+            exit 1
+        fi
+        echo "  WARNING: $zip contains $project_roots project roots; only '$projname' is built and repackaged" >&2
+    fi
+done
+echo
+
+# --- Step 2: Build the OSGi headless builder plugin ---
+echo "=== Step 2: Building headless builder plugin ==="
+mkdir -p "$PLUGIN_DIR/META-INF" "$PLUGIN_DIR/rodinbuilder"
+
+cat > "$PLUGIN_DIR/rodinbuilder/HeadlessBuilder.java" << 'JAVA'
+package rodinbuilder;
+
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.equinox.app.IApplication;
+import org.eclipse.equinox.app.IApplicationContext;
+import org.rodinp.core.*;
+import org.eventb.core.*;
+import org.eventb.core.preferences.IPrefMapEntry;
+import org.eventb.core.preferences.autotactics.ITacticProfileCache;
+import org.eventb.core.preferences.autotactics.TacticPreferenceConstants;
+import org.eventb.core.preferences.autotactics.TacticPreferenceFactory;
+import org.eventb.core.seqprover.ITacticDescriptor;
+import org.eventb.core.seqprover.IConfidence;
+import org.eventb.core.ast.Formula;
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.Predicate;
+import java.io.File;
+import java.util.*;
+
+public class HeadlessBuilder implements IApplication {
+    @Override
+    public Object start(IApplicationContext context) throws Exception {
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspaceRoot root = workspace.getRoot();
+        File wsDir = root.getLocation().toFile();
+
+        File[] dirs = wsDir.listFiles();
+        if (dirs != null) {
+            for (File dir : dirs) {
+                if (dir.isDirectory() && new File(dir, ".project").exists()) {
+                    String name = dir.getName();
+                    IProject project = root.getProject(name);
+                    if (!project.exists()) {
+                        System.out.println("Importing: " + name);
+                        IProjectDescription desc = workspace.newProjectDescription(name);
+                        project.create(desc, null);
+                        project.open(null);
+                    } else if (!project.isOpen()) {
+                        System.out.println("Opening: " + name);
+                        project.open(null);
+                    } else {
+                        System.out.println("Already open: " + name);
+                    }
+                }
+            }
+        }
+
+        // The builder runs Rodin's automatic prover on every out-of-date
+        // proof obligation by default. With auto-tactics off the build
+        // still runs the static checker, the obligation generator, and
+        // the proof-status update (rewriting .bps verdicts), but never
+        // invokes a prover — the pure status pass that status oracles
+        // need. The enable flags are only read from the in-memory
+        // preference singletons, so setting them here (after import,
+        // before the build) is exactly Rodin's own test-harness recipe.
+        if ("off".equals(System.getProperty("rodinbuilder.autotactics", "on"))) {
+            System.out.println("Auto-tactics disabled: the build will not run the automatic prover.");
+            EventBPlugin.getAutoPostTacticManager().getAutoTacticPreference().setEnabled(false);
+            EventBPlugin.getAutoPostTacticManager().getPostTacticPreference().setEnabled(false);
+        }
+
+        // Each run gets a throwaway workspace, so without this the build
+        // always uses Eclipse's default choice -- "Default Auto Tactic
+        // Profile", which carries no SMT. The profile is selected through
+        // the preference rather than by handing the manager a descriptor,
+        // because that is what getSelectedComposedTactics() actually reads.
+        // Contributed profiles (the SMT ones live in the SMT plug-in) are
+        // added to the cache by its inject(), so load() sees them too.
+
+        IEclipsePreferences proofPreferences = InstanceScope.INSTANCE.getNode("org.eventb.core");
+        ITacticProfileCache extraProfiles = TacticPreferenceFactory.makeTacticProfileCache(proofPreferences);
+        extraProfiles.load();
+        org.eventb.core.seqprover.IAutoTacticRegistry registry =
+            org.eventb.core.seqprover.SequentProver.getAutoTacticRegistry();
+        java.util.List<ITacticDescriptor> chain = new java.util.ArrayList<>();
+        chain.add(TacticPreferenceFactory.makeProfileReference("Default Auto Tactic Profile"));
+        chain.add(registry.getTacticDescriptor("org.eventb.pp.ppLasoo"));
+        chain.add(registry.getTacticDescriptor("com.clearsy.atelierb.provers.core.pp"));
+        chain.add(registry.getTacticDescriptor("com.clearsy.atelierb.provers.core.ml"));
+
+        org.eventb.core.seqprover.IParameterizerDescriptor strongML =
+            registry.getParameterizerDescriptor("com.clearsy.atelierb.provers.core.mlParam");
+        org.eventb.core.seqprover.IParameterSetting settings = strongML.makeParameterSetting();
+        settings.setInt("forces", 15);
+        settings.setLong("timeout", 10000L);
+        settings.setBoolean("restricted", false);
+        chain.add(strongML.instantiate(settings, "ML forces 0-3"));
+        extraProfiles.add("Workflow Atelier", registry.getCombinatorDescriptor(
+            "org.eventb.core.seqprover.loopOnAllPending").combine(chain, "Workflow Atelier tactic"));
+        extraProfiles.store();
+        proofPreferences.flush();
+        String profileName = System.getProperty("rodinbuilder.profile", "");
+        if (!profileName.isEmpty()) {
+            IEclipsePreferences prefNode =
+                InstanceScope.INSTANCE.getNode("org.eventb.core");
+            ITacticProfileCache profiles =
+                TacticPreferenceFactory.makeTacticProfileCache(prefNode);
+            profiles.load();
+            if (!profiles.exists(profileName)) {
+                // Refuse rather than fall back: an unknown name otherwise
+                // resolves to a fail-tactic and every obligation quietly
+                // goes undischarged, which reads as a solver regression.
+                StringBuilder known = new StringBuilder();
+                for (IPrefMapEntry<ITacticDescriptor> e : profiles.getEntries()) {
+                    known.append("\n  ").append(e.getKey());
+                }
+                System.err.println("ERROR: unknown tactic profile '" + profileName
+                    + "'. Available profiles:" + known);
+                return Integer.valueOf(1);
+            }
+            // Write the profile map back before selecting from it. The
+            // manager resolves the choice against its own plain cache,
+            // which -- unlike this one -- does not add the extension-point
+            // contributions, so an SMT profile that exists here is invisible
+            // there until it is materialised into the stored preference.
+            // The UI does this implicitly when its preference page is saved.
+            profiles.store();
+            prefNode.put(TacticPreferenceConstants.P_AUTOTACTIC_CHOICE, profileName);
+            prefNode.flush();
+            System.out.println("Auto-tactic profile: " + profileName);
+        }
+
+        System.out.println("Building workspace...");
+        workspace.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+        System.out.println("Build complete.");
+
+        // Launch success says nothing about the model; surface the
+        // static checker's per-component verdict, and in strict mode
+        // fail before autoprove/ProB can pile errors on a model that
+        // never statically checked.
+        boolean scAccurate = reportStaticCheck(root);
+        if (Boolean.getBoolean("rodinbuilder.strict") && !scAccurate) {
+            System.out.println("\nStrict mode: failing due to static check errors.");
+            return Integer.valueOf(1);
+        }
+
+        String mode = System.getProperty("rodinbuilder.mode", "build");
+        if ("autoprove".equals(mode)) {
+            boolean ok = runAutoProver(root);
+            if (!ok) return Integer.valueOf(1);
+
+        }
+
+        return IApplication.EXIT_OK;
+    }
+
+    // The static checker records where it dropped or changed elements
+    // as org.eventb.core.accurate="false" attributes in the .bcc/.bcm
+    // output — the verdict consumers otherwise have to grep out of the
+    // repackaged archives.
+    private boolean reportStaticCheck(IWorkspaceRoot root) throws Exception {
+        boolean allAccurate = true;
+        System.out.println("\n=== Static check results ===");
+        for (IProject project : root.getProjects()) {
+            if (!project.isOpen()) continue;
+            IRodinProject rp = RodinCore.valueOf(project);
+            for (IMachineRoot m : rp.getRootElementsOfType(IMachineRoot.ELEMENT_TYPE))
+                allAccurate &= reportComponent(m.getComponentName(), m.getSCMachineRoot());
+            for (IContextRoot c : rp.getRootElementsOfType(IContextRoot.ELEMENT_TYPE))
+                allAccurate &= reportComponent(c.getComponentName(), c.getSCContextRoot());
+        }
+        System.out.println(allAccurate
+            ? "Static check: ALL COMPONENTS ACCURATE"
+            : "Static check: ERRORS DETECTED");
+        return allAccurate;
+    }
+
+    // Accuracy is recorded per element, not just on the file root: a
+    // filtered action marks its event inaccurate while the root stays
+    // accurate. Walk the whole tree and name the first lossy element.
+    private String findInaccurate(IRodinElement element) throws Exception {
+        if (element instanceof IAccuracyElement
+                && !((IAccuracyElement) element).isAccurate()) {
+            return element instanceof ILabeledElement
+                ? ((ILabeledElement) element).getLabel()
+                : element.getElementName();
+        }
+        if (element instanceof IParent) {
+            for (IRodinElement child : ((IParent) element).getChildren()) {
+                String hit = findInaccurate(child);
+                if (hit != null) return hit;
+            }
+        }
+        return null;
+    }
+
+    // A missing SC root counts as a failure: the component was never
+    // successfully checked, which is exactly what strict mode is for.
+    private boolean reportComponent(String name, IInternalElement scRoot) {
+        try {
+            if (!scRoot.exists()) {
+                System.out.println("  " + name + ": NOT CHECKED (no static-check output)");
+                return false;
+            }
+            String inaccurate = findInaccurate(scRoot);
+            if (inaccurate == null) {
+                System.out.println("  " + name + ": OK");
+                return true;
+            }
+            System.out.println("  " + name + ": STATIC CHECK ERRORS (at " + inaccurate + ")");
+            return false;
+        } catch (Exception e) {
+            System.err.println("  " + name + ": accuracy unreadable: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean runAutoProver(IWorkspaceRoot root) throws Exception {
+        boolean allProved = true;
+        // Recalculate mode feeds every status to Rodin's "recalculate
+        // auto status" pass, which re-proves each obligation and
+        // replaces the stored proof whenever the fresh attempt closes
+        // — re-anchoring proofs to the current reasoner levels. The
+        // default only attacks undischarged obligations and never
+        // touches an existing proof.
+        boolean recalculate = Boolean.getBoolean("rodinbuilder.recalculate");
+
+        for (IProject project : root.getProjects()) {
+            if (!project.isOpen()) continue;
+            IRodinProject rp = RodinCore.valueOf(project);
+
+            // Process both machines and contexts (both can have POs)
+            List<IEventBRoot> components = new ArrayList<>();
+            for (IMachineRoot m : rp.getRootElementsOfType(IMachineRoot.ELEMENT_TYPE))
+                components.add(m);
+            for (IContextRoot c : rp.getRootElementsOfType(IContextRoot.ELEMENT_TYPE))
+                components.add(c);
+
+            for (IEventBRoot component : components) {
+                IPSRoot psRoot = component.getPSRoot();
+                if (!psRoot.exists()) continue;
+                String name = component.getComponentName();
+
+                try {
+                    IPSStatus[] allStatuses = psRoot.getStatuses();
+                    Set<IPSStatus> selected = new HashSet<>();
+                    for (IPSStatus s : allStatuses) {
+                        if (recalculate || s.getConfidence() <= IConfidence.PENDING) {
+                            selected.add(s);
+                        }
+                    }
+
+                    System.out.println("\n=== Auto-prove: " + name + " ===");
+                    System.out.println("  Total POs: " + allStatuses.length
+                        + (recalculate ? ", recalculating all"
+                                       : ", undischarged: " + selected.size()));
+
+                    if (!selected.isEmpty()) {
+                        if (recalculate) {
+                            EventBPlugin.recalculateAutoStatus(selected, new NullProgressMonitor());
+                        } else {
+                            EventBPlugin.runAutoProver(selected, new NullProgressMonitor());
+                        }
+                    }
+
+                    // Re-read and report results
+                    int discharged = 0;
+                    IPSStatus[] updatedStatuses = psRoot.getStatuses();
+                    for (IPSStatus s : updatedStatuses) {
+                        if (s.getConfidence() > IConfidence.PENDING) discharged++;
+                    }
+                    System.out.println("  Discharged: " + discharged + "/" + updatedStatuses.length);
+                    if (discharged < updatedStatuses.length) allProved = false;
+                } catch (Exception e) {
+                    System.err.println("  Auto-prove error on " + name + ": " + e.getMessage());
+                    allProved = false;
+                }
+            }
+        }
+
+        if (allProved) {
+            System.out.println("\nAuto-prover: ALL PROOF OBLIGATIONS DISCHARGED");
+        } else {
+            System.out.println("\nAuto-prover: SOME PROOF OBLIGATIONS REMAIN");
+        }
+        return allProved;
+    }
+
+    @Override
+    public void stop() {}
+}
+JAVA
+
+cat > "$PLUGIN_DIR/plugin.xml" << XML
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension id="headlessBuilder" point="org.eclipse.core.runtime.applications">
+      <application>
+         <run class="rodinbuilder.HeadlessBuilder"/>
+      </application>
+   </extension>
+</plugin>
+XML
+
+cat > "$PLUGIN_DIR/META-INF/MANIFEST.MF" << MF
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Rodin Headless Builder
+Bundle-SymbolicName: $BUNDLE_SYMBOLIC_NAME;singleton:=true
+Bundle-Version: $BUNDLE_VERSION
+Require-Bundle: org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.equinox.app,
+ org.eclipse.equinox.preferences,
+ org.eventb.core,
+ org.eventb.core.ast,
+ org.eventb.core.seqprover,
+ org.rodinp.core
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+MF
+
+# Compile against Rodin's Eclipse and plugin JARs
+CP=$(resolve_latest_jar "$RODIN_PLUGINS" org.eclipse.core.resources)
+CP="$CP:$(resolve_latest_jar "$RODIN_PLUGINS" org.eclipse.core.runtime)"
+CP="$CP:$(resolve_latest_jar "$RODIN_PLUGINS" org.eclipse.equinox.app)"
+CP="$CP:$(resolve_latest_jar "$RODIN_PLUGINS" org.eclipse.equinox.common)"
+CP="$CP:$(resolve_latest_jar "$RODIN_PLUGINS" org.eclipse.equinox.preferences)"
+# IEclipsePreferences extends org.osgi.service.prefs.Preferences, which
+# ships in its own bundle rather than in equinox.preferences.
+CP="$CP:$(resolve_latest_jar "$RODIN_PLUGINS" org.osgi.service.prefs)"
+CP="$CP:$(resolve_latest_jar "$RODIN_PLUGINS" org.eclipse.core.jobs)"
+CP="$CP:$(resolve_latest_jar "$RODIN_PLUGINS" org.eclipse.osgi)"
+CP="$CP:$(resolve_latest_jar "$RODIN_PLUGINS" org.eventb.core)"
+CP="$CP:$(resolve_latest_jar "$RODIN_PLUGINS" org.eventb.core.ast)"
+CP="$CP:$(resolve_latest_jar "$RODIN_PLUGINS" org.rodinp.core)"
+CP="$CP:$(resolve_latest_jar "$RODIN_PLUGINS" org.eventb.core.seqprover)"
+java -jar "$(resolve_latest_jar "$RODIN_PLUGINS" org.eclipse.jdt.core.compiler.batch)" -17 -proc:none -cp "$CP" "$PLUGIN_DIR/rodinbuilder/HeadlessBuilder.java"
+(cd "$PLUGIN_DIR" && zip -q "$BUNDLE_JAR_NAME" META-INF/MANIFEST.MF plugin.xml rodinbuilder/*.class)
+
+echo "  Plugin built: $PLUGIN_DIR/$BUNDLE_JAR_NAME"
+echo
+
+# --- Step 3: Run Rodin headless builder ---
+echo "=== Step 3: Running Rodin headless builder ==="
+# Register the plugin in a throwaway configuration area instead of
+# copying it into the install: the install stays read-only, so a hard
+# kill cannot leave a stale bundle behind to poison later launches,
+# and concurrent runs cannot clobber one another.
+seed_equinox_config_area "$RODIN_HOME" "$CONFIG_AREA" "$BUNDLE_INFO_LINE"
+
+# SWT's Cocoa port must run on the JVM's first thread; Linux JVMs
+# reject the flag, so it is spliced in on Darwin only.
+JAVA_PLATFORM_OPTS=()
+if [ "$(host_os)" = Darwin ]; then
+    JAVA_PLATFORM_OPTS=(-XstartOnFirstThread)
+fi
+
+# Build the Rodin launch command (prefer equinox launcher JAR over native binary)
+LAUNCHER_JAR=$(resolve_latest_jar "$RODIN_PLUGINS" org.eclipse.equinox.launcher)
+RODIN_VMARGS=()
+if [ -n "$LAUNCHER_JAR" ]; then
+    # -install is load-bearing: the relative plugins/... locations in
+    # the seeded bundles.info resolve against the install area.
+    RODIN_CMD=(java "-Drodinbuilder.mode=$BUILD_MODE" "-Drodinbuilder.strict=$STRICT_MODE"
+        "-Drodinbuilder.autotactics=$AUTO_TACTICS" "-Drodinbuilder.recalculate=$RECALCULATE"
+        "-Drodinbuilder.profile=$TACTIC_PROFILE"
+        "${JDK_XML_RELAXED_OPTS[@]}"
+        ${JAVA_PLATFORM_OPTS[@]+"${JAVA_PLATFORM_OPTS[@]}"}
+        -jar "$LAUNCHER_JAR" -install "$RODIN_HOME")
+else
+    RODIN_CMD=("$(resolve_rodin_launcher "$RODIN_DIR" || printf '%s\n' "$RODIN_DIR/rodin")")
+    # The native launcher takes JVM options only after a trailing
+    # -vmargs; appendVmargs keeps rodin.ini's own vmargs (heap size)
+    # intact instead of replacing them.
+    RODIN_VMARGS=(--launcher.appendVmargs -vmargs
+        "${JDK_XML_RELAXED_OPTS[@]}"
+        "-Drodinbuilder.mode=$BUILD_MODE" "-Drodinbuilder.strict=$STRICT_MODE"
+        "-Drodinbuilder.autotactics=$AUTO_TACTICS" "-Drodinbuilder.recalculate=$RECALCULATE"
+        "-Drodinbuilder.profile=$TACTIC_PROFILE")
+fi
+
+echo "Rodin build timeout: $RODIN_BUILD_TIMEOUT"
+
+# No -clean: the freshly seeded configuration area has no caches.
+LAUNCH_STATUS=0
+run_with_filtered_output \
+    run_with_optional_timeout "$RODIN_BUILD_TIMEOUT" "$RODIN_BUILD_TIMEOUT_KILL_AFTER" \
+    "${RODIN_CMD[@]}" \
+    -nosplash \
+    -configuration "$CONFIG_AREA" \
+    -application "$APPLICATION_ID" \
+    -data "$WORKSPACE" \
+    -consolelog \
+    ${RODIN_VMARGS[@]+"${RODIN_VMARGS[@]}"} || LAUNCH_STATUS=$?
+echo
+
+case "$LAUNCH_STATUS" in
+    124 | 137)
+        echo "ERROR: Rodin headless builder timed out after $RODIN_BUILD_TIMEOUT; skipping archive repackaging." >&2
+        exit "$LAUNCH_STATUS"
+        ;;
+    125)
+        # The timeout tool itself failed (e.g. unparsable duration) —
+        # no build ran, so repackaging would silently report success.
+        echo "ERROR: could not enforce RODIN_BUILD_TIMEOUT=$RODIN_BUILD_TIMEOUT; skipping archive repackaging." >&2
+        exit "$LAUNCH_STATUS"
+        ;;
+    130)
+        echo "ERROR: Rodin headless builder was interrupted; skipping archive repackaging." >&2
+        exit "$LAUNCH_STATUS"
+        ;;
+esac
+
+# --- Step 4: Check results and repackage ---
+echo "=== Step 4: Repackaging archives ==="
+
+for zip_index in "${!ZIPS[@]}"; do
+    zip="${ZIPS[$zip_index]}"
+    m="${zip%.zip}"
+
+    # Extract original zip
+    tmpdir=$(rh_mktemp_dir)
+    unzip -q "$MODELS_DIR/$zip" -d "$tmpdir"
+
+    # The project root was located during extraction; the re-extracted
+    # tree is identical, so the stored relative path points at it.
+    if [ -z "${ZIP_ROOTS[$zip_index]:-}" ]; then
+        rm -rf "$tmpdir"
+        continue
+    fi
+    bumdir="$tmpdir/${ZIP_ROOTS[$zip_index]}"
+
+    projdir=""
+    if [ -n "${ZIP_PROJECTS[$zip_index]:-}" ]; then
+        candidate="$WORKSPACE/${ZIP_PROJECTS[$zip_index]}"
+        if [ -d "$candidate" ]; then
+            projdir="$candidate"
+        fi
+    fi
+
+    if [ -n "$projdir" ]; then
+        changed=false
+        updated=0
+        # Copy non-hidden workspace files back to the archive
+        # (the glob excludes dotfiles like .project by default)
+        for src in "$projdir"/*; do
+            [ -f "$src" ] || continue
+            fname="${src##*/}"
+            dest="$bumdir/$fname"
+            if [ -f "$dest" ] && cmp -s "$src" "$dest"; then
+                : # identical — keep original file and its timestamp
+            else
+                cp "$src" "$dest"
+                changed=true
+                updated=$((updated + 1))
+            fi
+        done
+        if [ "$changed" = true ]; then
+            (cd "$tmpdir" && zip -q -r "$MODELS_DIR/$zip" .)
+        fi
+        echo "  $m: $updated file(s) updated"
+    else
+        echo "  $m: no matching workspace project found"
+    fi
+
+    rm -rf "$tmpdir"
+done
+
+echo
+if [ "$LAUNCH_STATUS" -ne 0 ]; then
+    exit "$LAUNCH_STATUS"
+fi
+
+echo "Done."

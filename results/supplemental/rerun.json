@@ -1,0 +1,144 @@
+{
+  "base_commit": "d1897ce2cfe4ebf4ac3937ad9fa926643d4e6405",
+  "python": "3.12.14",
+  "sqlite": "3.53.1",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+  "visible_cpus": 9,
+  "primary": {
+    "configurations": [
+      [
+        2,
+        1
+      ],
+      [
+        4,
+        2
+      ],
+      [
+        8,
+        3
+      ]
+    ],
+    "seed_count": 50,
+    "budget": 16,
+    "methods": [
+      "nominal",
+      "random",
+      "model_conflicts",
+      "canonical_independence"
+    ],
+    "clean_replays": 9600,
+    "mutant_replays": 86400,
+    "elapsed_seconds": 215.75048142300005,
+    "python": "3.12.14",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "model_sha256": "3106908be47025152a08e1ea65438f884af7ae0b9d718b6b0c84e0bab0105941"
+  },
+  "finite_instances": [
+    {
+      "requests": 1,
+      "capacity": 1,
+      "states": 13,
+      "enabled_transitions": 26,
+      "rejected_attempts": 78,
+      "all_attempts": 104,
+      "complete": true,
+      "seconds": 0.04728509000000258
+    },
+    {
+      "requests": 2,
+      "capacity": 1,
+      "states": 133,
+      "enabled_transitions": 412,
+      "rejected_attempts": 1716,
+      "all_attempts": 2128,
+      "complete": true,
+      "seconds": 0.7462796820000221
+    },
+    {
+      "requests": 3,
+      "capacity": 2,
+      "states": 1981,
+      "enabled_transitions": 10806,
+      "rejected_attempts": 36738,
+      "all_attempts": 47544,
+      "complete": true,
+      "seconds": 24.070144760999995
+    }
+  ],
+  "proof_bridge": {
+    "equivalent_core": true,
+    "same_context": true,
+    "identical_suites": 600,
+    "identical_schedules": 9600,
+    "schedule_digest": "da08945ab9bfe65ec98252a02b93e399d49126dd6aebe9c0de656d599700b9e8",
+    "transformations": [
+      {
+        "event": "INITIALISATION",
+        "removed_derived_labels": [],
+        "substituted_parameters": []
+      },
+      {
+        "event": "Reserve",
+        "removed_derived_labels": [],
+        "substituted_parameters": []
+      },
+      {
+        "event": "Execute",
+        "removed_derived_labels": [],
+        "substituted_parameters": []
+      },
+      {
+        "event": "Transfer",
+        "removed_derived_labels": [],
+        "substituted_parameters": []
+      },
+      {
+        "event": "Acknowledge",
+        "removed_derived_labels": [],
+        "substituted_parameters": []
+      },
+      {
+        "event": "Release",
+        "removed_derived_labels": [
+          "remaining_card",
+          "remaining_definition",
+          "remaining_disjoint",
+          "remaining_partition"
+        ],
+        "substituted_parameters": [
+          "remaining"
+        ]
+      },
+      {
+        "event": "Expire",
+        "removed_derived_labels": [
+          "remaining_card",
+          "remaining_definition",
+          "remaining_disjoint",
+          "remaining_partition"
+        ],
+        "substituted_parameters": [
+          "remaining"
+        ]
+      }
+    ]
+  },
+  "native": {
+    "rodin": "3.9",
+    "atelier_b_plugin": "2.4.1.r16756",
+    "java": "21.0.13",
+    "prior_proofs_purged": true,
+    "automatic": 24,
+    "total": 24,
+    "INV": 15,
+    "THM": 6,
+    "WD": 3
+  },
+  "supplemental": {
+    "mutant_trials": 5400,
+    "suite_count": 600,
+    "timed_trials": 1100
+  }
+}

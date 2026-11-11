@@ -1,0 +1,3 @@
+{'requests': 1, 'capacity': 1, 'states': 13, 'enabled_transitions': 26, 'rejected_attempts': 78, 'all_attempts': 104, 'complete': True, 'seconds': 0.09119243500026641}
+{'requests': 2, 'capacity': 1, 'states': 133, 'enabled_transitions': 412, 'rejected_attempts': 1716, 'all_attempts': 2128, 'complete': True, 'seconds': 0.8741808899994794}
+{'requests': 3, 'capacity': 2, 'states': 1981, 'enabled_transitions': 10806, 'rejected_attempts': 36738, 'all_attempts': 47544, 'complete': True, 'seconds': 24.438875881000058}

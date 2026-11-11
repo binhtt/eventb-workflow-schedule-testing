@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.poFile org.eventb.core.poStamp="0">
+    <org.eventb.core.poPredicateSet name="CTXHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poIdentifier name="REQ" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="CAP" org.eventb.core.type="ℤ"/>
+        <org.eventb.core.poPredicate name="RER" org.eventb.core.predicate="finite(REQ)" org.eventb.core.source="/SharedWorkflow/Pool.buc|org.eventb.core.contextFile#Pool|org.eventb.core.axiom#finite_requests"/>
+        <org.eventb.core.poPredicate name="RES" org.eventb.core.predicate="CAP∈ℕ1" org.eventb.core.source="/SharedWorkflow/Pool.buc|org.eventb.core.contextFile#Pool|org.eventb.core.axiom#positive_capacity"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="ABSHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poIdentifier name="moved" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="acked" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="free" org.eventb.core.type="ℤ"/>
+        <org.eventb.core.poIdentifier name="closed" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="effected" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="held" org.eventb.core.type="ℙ(REQ)"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poSequent name="conservation/WD" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-definedness of Invariant" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#HYPPoor"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="finite(held)" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#conservation"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#conservation"/>
+        <org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#HYPPoor"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="INITIALISATION/free_nonnegative/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  establishment" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectee"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="CAP∈ℕ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#free_nonnegative"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#initialise"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#free_nonnegative"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#INITIALISATION\/free_nonnegative\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#HYPPoor|org.eventb.core.poPredicate#PRD5"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="INITIALISATION/conservation/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  establishment" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectee"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="CAP+card(∅ ⦂ ℙ(REQ))=CAP" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#conservation"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#initialise"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#conservation"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#INITIALISATION\/conservation\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD6"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="INITIALISATION/closed_not_held/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  establishment" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectee"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(∅ ⦂ ℙ(REQ))∩(∅ ⦂ ℙ(REQ))=(∅ ⦂ ℙ(REQ))" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#closed_not_held"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#initialise"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#closed_not_held"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#INITIALISATION\/closed_not_held\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD7"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="INITIALISATION/ack_after_effect/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  establishment" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectee"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(∅ ⦂ ℙ(REQ))⊆(∅ ⦂ ℙ(REQ))" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#ack_after_effect"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#initialise"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#ack_after_effect"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#INITIALISATION\/ack_after_effect\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD8"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poPredicateSet name="EVTIDENTeffectee" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poIdentifier name="held'" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="acked'" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="free'" org.eventb.core.type="ℤ"/>
+        <org.eventb.core.poIdentifier name="moved'" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="closed'" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="effected'" org.eventb.core.type="ℙ(REQ)"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTALLHYPeffectee" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTIDENTeffectee" org.eventb.core.poStamp="0"/>
+    <org.eventb.core.poSequent name="Reserve/free_nonnegative/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectef"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="free − 1∈ℕ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#free_nonnegative"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Reserve"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#free_nonnegative"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#Reserve\/free_nonnegative\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#HYPPoor|org.eventb.core.poPredicate#PRD5"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Reserve/conservation/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectef"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="free − 1+card(held∪{r})=CAP" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#conservation"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Reserve"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#conservation"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#Reserve\/conservation\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD6"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Reserve/closed_not_held/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectef"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(held∪{r})∩closed=(∅ ⦂ ℙ(REQ))" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#closed_not_held"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Reserve"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#closed_not_held"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#Reserve\/closed_not_held\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD7"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poPredicateSet name="EVTIDENTeffectef" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poIdentifier name="held'" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="free'" org.eventb.core.type="ℤ"/>
+        <org.eventb.core.poIdentifier name="r" org.eventb.core.type="REQ"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTALLHYPeffectef" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTIDENTeffectef" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="r∈REQ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Reserve|org.eventb.core.guard#g0"/>
+        <org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="r∉held" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Reserve|org.eventb.core.guard#g1"/>
+        <org.eventb.core.poPredicate name="PRD2" org.eventb.core.predicate="r∉closed" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Reserve|org.eventb.core.guard#g2"/>
+        <org.eventb.core.poPredicate name="PRD3" org.eventb.core.predicate="free&gt;0" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Reserve|org.eventb.core.guard#g3"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poSequent name="Execute/ack_after_effect/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffecteg"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="acked⊆effected∪{r}" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#ack_after_effect"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Execute"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#ack_after_effect"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#Execute\/ack_after_effect\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD8"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poPredicateSet name="EVTIDENTeffecteg" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poIdentifier name="r" org.eventb.core.type="REQ"/>
+        <org.eventb.core.poIdentifier name="v" org.eventb.core.type="ℤ"/>
+        <org.eventb.core.poIdentifier name="effected'" org.eventb.core.type="ℙ(REQ)"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTALLHYPeffecteg" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTIDENTeffecteg" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="r∈REQ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Execute|org.eventb.core.guard#g0"/>
+        <org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="v∈{0,1}" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Execute|org.eventb.core.guard#g1"/>
+        <org.eventb.core.poPredicate name="PRD2" org.eventb.core.predicate="r∈held" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Execute|org.eventb.core.guard#g2"/>
+        <org.eventb.core.poPredicate name="PRD3" org.eventb.core.predicate="r∉effected" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Execute|org.eventb.core.guard#g3"/>
+        <org.eventb.core.poPredicate name="PRD4" org.eventb.core.predicate="r∈moved⇒v=1" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Execute|org.eventb.core.guard#g4"/>
+        <org.eventb.core.poPredicate name="PRD5" org.eventb.core.predicate="r∉moved⇒v=0" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Execute|org.eventb.core.guard#g5"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTIDENTeffecteh" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poIdentifier name="r" org.eventb.core.type="REQ"/>
+        <org.eventb.core.poIdentifier name="moved'" org.eventb.core.type="ℙ(REQ)"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTALLHYPeffecteh" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTIDENTeffecteh" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="r∈REQ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Transfer|org.eventb.core.guard#g0"/>
+        <org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="r∈held" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Transfer|org.eventb.core.guard#g1"/>
+        <org.eventb.core.poPredicate name="PRD2" org.eventb.core.predicate="r∉moved" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Transfer|org.eventb.core.guard#g2"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poSequent name="Acknowledge/ack_after_effect/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectei"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="acked∪{r}⊆effected" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#ack_after_effect"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Acknowledge"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#ack_after_effect"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#Acknowledge\/ack_after_effect\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD8"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poPredicateSet name="EVTIDENTeffectei" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poIdentifier name="acked'" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="r" org.eventb.core.type="REQ"/>
+        <org.eventb.core.poIdentifier name="v" org.eventb.core.type="ℤ"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTALLHYPeffectei" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTIDENTeffectei" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="r∈REQ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Acknowledge|org.eventb.core.guard#g0"/>
+        <org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="v∈{0,1}" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Acknowledge|org.eventb.core.guard#g1"/>
+        <org.eventb.core.poPredicate name="PRD2" org.eventb.core.predicate="r∈effected" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Acknowledge|org.eventb.core.guard#g2"/>
+        <org.eventb.core.poPredicate name="PRD3" org.eventb.core.predicate="r∈moved⇒v=1" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Acknowledge|org.eventb.core.guard#g3"/>
+        <org.eventb.core.poPredicate name="PRD4" org.eventb.core.predicate="r∉moved⇒v=0" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Acknowledge|org.eventb.core.guard#g4"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poSequent name="Release/remaining_partition/THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Theorem" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectej)"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="held=remaining∪{r}" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#remaining_partition"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#remaining_partition"/>
+        <org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectej)"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Release/remaining_disjoint/THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Theorem" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectej*"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="r∉remaining" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#remaining_disjoint"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#remaining_disjoint"/>
+        <org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectej*"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Release/remaining_card/WD" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-definedness of Theorem" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectej+"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="finite(held)∧finite(remaining)" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#remaining_card"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#remaining_card"/>
+        <org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectej+"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Release/remaining_card/THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Theorem" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectej+"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="card(held)=card(remaining)+1" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#remaining_card"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#remaining_card"/>
+        <org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectej+"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Release/free_nonnegative/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectej"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="free+1∈ℕ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#free_nonnegative"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#free_nonnegative"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#Release\/free_nonnegative\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#HYPPoor|org.eventb.core.poPredicate#PRD5"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Release/conservation/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectej"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(free+1)+card(remaining)=CAP" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#conservation"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#conservation"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#Release\/conservation\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD6"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Release/closed_not_held/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectej"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="remaining∩(closed∪{r})=(∅ ⦂ ℙ(REQ))" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#closed_not_held"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#closed_not_held"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#Release\/closed_not_held\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD7"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poPredicateSet name="EVTIDENTeffectej" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poIdentifier name="held'" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="free'" org.eventb.core.type="ℤ"/>
+        <org.eventb.core.poIdentifier name="r" org.eventb.core.type="REQ"/>
+        <org.eventb.core.poIdentifier name="closed'" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="remaining" org.eventb.core.type="ℙ(REQ)"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTHYPeffectej)" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTIDENTeffectej" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="r∈REQ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#g0"/>
+        <org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="r∈held" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#g1"/>
+        <org.eventb.core.poPredicate name="PRD2" org.eventb.core.predicate="remaining=held ∖ {r}" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#remaining_definition"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTHYPeffectej*" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectej)" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD3" org.eventb.core.predicate="held=remaining∪{r}" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#remaining_partition"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTHYPeffectej+" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectej*" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD4" org.eventb.core.predicate="r∉remaining" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#remaining_disjoint"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTALLHYPeffectej" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectej+" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD5" org.eventb.core.predicate="card(held)=card(remaining)+1" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Release|org.eventb.core.guard#remaining_card"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poSequent name="Expire/remaining_partition/THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Theorem" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectek)"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="held=remaining∪{r}" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#remaining_partition"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#remaining_partition"/>
+        <org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectek)"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Expire/remaining_disjoint/THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Theorem" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectek*"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="r∉remaining" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#remaining_disjoint"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#remaining_disjoint"/>
+        <org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectek*"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Expire/remaining_card/WD" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-definedness of Theorem" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectek+"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="finite(held)∧finite(remaining)" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#remaining_card"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#remaining_card"/>
+        <org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectek+"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Expire/remaining_card/THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Theorem" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectek+"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="card(held)=card(remaining)+1" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#remaining_card"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#remaining_card"/>
+        <org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectek+"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Expire/free_nonnegative/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectek"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="free+1∈ℕ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#free_nonnegative"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#free_nonnegative"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#Expire\/free_nonnegative\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#HYPPoor|org.eventb.core.poPredicate#PRD5"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Expire/conservation/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectek"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(free+1)+card(remaining)=CAP" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#conservation"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#conservation"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#Expire\/conservation\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD6"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poSequent name="Expire/closed_not_held/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTALLHYPeffectek"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="remaining∩(closed∪{r})=(∅ ⦂ ℙ(REQ))" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#closed_not_held"/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire"/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#closed_not_held"/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poSequent#Expire\/closed_not_held\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+        <org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD7"/>
+    </org.eventb.core.poSequent>
+    <org.eventb.core.poPredicateSet name="EVTIDENTeffectek" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poIdentifier name="held'" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="free'" org.eventb.core.type="ℤ"/>
+        <org.eventb.core.poIdentifier name="r" org.eventb.core.type="REQ"/>
+        <org.eventb.core.poIdentifier name="closed'" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="remaining" org.eventb.core.type="ℙ(REQ)"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTHYPeffectek)" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTIDENTeffectek" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="r∈REQ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#g0"/>
+        <org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="r∈held" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#g1"/>
+        <org.eventb.core.poPredicate name="PRD2" org.eventb.core.predicate="remaining=held ∖ {r}" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#remaining_definition"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTHYPeffectek*" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectek)" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD3" org.eventb.core.predicate="held=remaining∪{r}" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#remaining_partition"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTHYPeffectek+" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectek*" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD4" org.eventb.core.predicate="r∉remaining" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#remaining_disjoint"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="EVTALLHYPeffectek" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#EVTHYPeffectek+" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD5" org.eventb.core.predicate="card(held)=card(remaining)+1" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.event#Expire|org.eventb.core.guard#remaining_card"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="HYPPoor" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="held⊆REQ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#type_held"/>
+        <org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="closed⊆REQ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#type_closed"/>
+        <org.eventb.core.poPredicate name="PRD2" org.eventb.core.predicate="moved⊆REQ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#type_moved"/>
+        <org.eventb.core.poPredicate name="PRD3" org.eventb.core.predicate="effected⊆REQ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#type_effected"/>
+        <org.eventb.core.poPredicate name="PRD4" org.eventb.core.predicate="acked⊆REQ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#type_acked"/>
+        <org.eventb.core.poPredicate name="PRD5" org.eventb.core.predicate="free∈ℕ" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#free_nonnegative"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="ALLHYP" org.eventb.core.parentSet="/SharedWorkflow/Resource.bpo|org.eventb.core.poFile#Resource|org.eventb.core.poPredicateSet#HYPPoor" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD6" org.eventb.core.predicate="free+card(held)=CAP" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#conservation"/>
+        <org.eventb.core.poPredicate name="PRD7" org.eventb.core.predicate="held∩closed=(∅ ⦂ ℙ(REQ))" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#closed_not_held"/>
+        <org.eventb.core.poPredicate name="PRD8" org.eventb.core.predicate="acked⊆effected" org.eventb.core.source="/SharedWorkflow/Resource.bum|org.eventb.core.machineFile#Resource|org.eventb.core.invariant#ack_after_effect"/>
+    </org.eventb.core.poPredicateSet>
+</org.eventb.core.poFile>

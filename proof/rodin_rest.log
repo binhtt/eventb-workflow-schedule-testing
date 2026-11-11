@@ -1,0 +1,57 @@
+Workspace: /tmp/rodin-headless.mc1LKm
+Processing 1 archives
+
+=== Step 1: Extracting archives ===
+  SharedWorkflow → SharedWorkflow
+
+=== Step 2: Building headless builder plugin ===
+----------
+1. WARNING in /tmp/rodin-headless.ukl9ka/rodinbuilder/HeadlessBuilder.java (at line 17)
+	import org.eventb.core.ast.Formula;
+	       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The import org.eventb.core.ast.Formula is never used
+----------
+2. WARNING in /tmp/rodin-headless.ukl9ka/rodinbuilder/HeadlessBuilder.java (at line 18)
+	import org.eventb.core.ast.FormulaFactory;
+	       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The import org.eventb.core.ast.FormulaFactory is never used
+----------
+3. WARNING in /tmp/rodin-headless.ukl9ka/rodinbuilder/HeadlessBuilder.java (at line 19)
+	import org.eventb.core.ast.Predicate;
+	       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The import org.eventb.core.ast.Predicate is never used
+----------
+3 problems (3 warnings)
+  Plugin built: /tmp/rodin-headless.ukl9ka/rodinbuilder_rodinheadlessukl9ka.jar
+
+=== Step 3: Running Rodin headless builder ===
+Rodin build timeout: 60m
+Importing: SharedWorkflow
+Auto-tactic profile: Workflow Atelier
+Building workspace...
+Build complete.
+=== Static check results ===
+  Resource: OK
+  Pool: OK
+Static check: ALL COMPONENTS ACCURATE
+=== Auto-prove: Resource ===
+  Total POs: 24, undischarged: 0
+  Discharged: 24/24
+=== Auto-prove: Pool ===
+  Total POs: 0, undischarged: 0
+  Discharged: 0/0
+Auto-prover: ALL PROOF OBLIGATIONS DISCHARGED
+!SESSION 2026-11-06 10:17:24.079 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=17.0.20
+java.vendor=Ubuntu
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en
+Framework arguments:  -application rodinbuilder.rodinheadlessukl9ka.headlessBuilder
+Command-line arguments:  -application rodinbuilder.rodinheadlessukl9ka.headlessBuilder -data /tmp/rodin-headless.mc1LKm -consolelog
+!ENTRY org.eclipse.core.resources 2 10035 2026-11-06 10:17:31.735
+!MESSAGE The workspace will exit with unsaved changes in this session.
+
+=== Step 4: Repackaging archives ===
+  SharedWorkflow: 8 file(s) updated
+
+Done.

@@ -1,0 +1,7 @@
+requests,capacity,method,eligible_trials,detected_by_25_ms,detected_by_50_ms,detected_by_100_ms
+2,1,Model-derived,150,150,150,150
+2,1,Random,150,146,146,146
+4,2,Model-derived,200,196,200,200
+4,2,Random,200,200,200,200
+8,3,Model-derived,200,0,0,200
+8,3,Random,200,173,199,200

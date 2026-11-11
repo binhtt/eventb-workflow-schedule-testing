@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.poFile org.eventb.core.poStamp="0">
+    <org.eventb.core.poPredicateSet name="ABSHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poIdentifier name="REQ" org.eventb.core.type="ℙ(REQ)"/>
+        <org.eventb.core.poIdentifier name="CAP" org.eventb.core.type="ℤ"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="ALLHYP" org.eventb.core.parentSet="/SharedWorkflow/Pool.bpo|org.eventb.core.poFile#Pool|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="finite(REQ)" org.eventb.core.source="/SharedWorkflow/Pool.buc|org.eventb.core.contextFile#Pool|org.eventb.core.axiom#finite_requests"/>
+        <org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="CAP∈ℕ1" org.eventb.core.source="/SharedWorkflow/Pool.buc|org.eventb.core.contextFile#Pool|org.eventb.core.axiom#positive_capacity"/>
+    </org.eventb.core.poPredicateSet>
+</org.eventb.core.poFile>

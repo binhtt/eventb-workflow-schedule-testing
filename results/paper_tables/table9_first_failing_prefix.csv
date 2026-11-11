@@ -1,0 +1,5 @@
+step,request,operation,phase,free,held_count,free_plus_held,failures
+1,1,retry_reserve,probe,2,0,2,
+2,0,retry_reserve,probe,2,0,2,
+3,0,retry_reserve,apply,1,1,2,
+4,1,retry_reserve,apply,1,2,3,resource_conservation

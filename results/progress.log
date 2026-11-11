@@ -1,0 +1,42 @@
+2 1 nominal completed
+2 1 random completed
+2 1 model_conflicts completed
+2 1 canonical_independence completed
+4 2 nominal completed
+4 2 random completed
+4 2 model_conflicts completed
+4 2 canonical_independence completed
+8 3 nominal completed
+8 3 random completed
+8 3 model_conflicts completed
+8 3 canonical_independence completed
+{
+  "configurations": [
+    [
+      2,
+      1
+    ],
+    [
+      4,
+      2
+    ],
+    [
+      8,
+      3
+    ]
+  ],
+  "seed_count": 50,
+  "budget": 16,
+  "methods": [
+    "nominal",
+    "random",
+    "model_conflicts",
+    "canonical_independence"
+  ],
+  "clean_replays": 9600,
+  "mutant_replays": 86400,
+  "elapsed_seconds": 155.1144162950004,
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "model_sha256": "3106908be47025152a08e1ea65438f884af7ae0b9d718b6b0c84e0bab0105941"
+}

@@ -1,0 +1,58 @@
+{
+  "equivalent_core": true,
+  "same_context": true,
+  "identical_suites": 600,
+  "identical_schedules": 9600,
+  "schedule_digest": "da08945ab9bfe65ec98252a02b93e399d49126dd6aebe9c0de656d599700b9e8",
+  "transformations": [
+    {
+      "event": "INITIALISATION",
+      "removed_derived_labels": [],
+      "substituted_parameters": []
+    },
+    {
+      "event": "Reserve",
+      "removed_derived_labels": [],
+      "substituted_parameters": []
+    },
+    {
+      "event": "Execute",
+      "removed_derived_labels": [],
+      "substituted_parameters": []
+    },
+    {
+      "event": "Transfer",
+      "removed_derived_labels": [],
+      "substituted_parameters": []
+    },
+    {
+      "event": "Acknowledge",
+      "removed_derived_labels": [],
+      "substituted_parameters": []
+    },
+    {
+      "event": "Release",
+      "removed_derived_labels": [
+        "remaining_card",
+        "remaining_definition",
+        "remaining_disjoint",
+        "remaining_partition"
+      ],
+      "substituted_parameters": [
+        "remaining"
+      ]
+    },
+    {
+      "event": "Expire",
+      "removed_derived_labels": [
+        "remaining_card",
+        "remaining_definition",
+        "remaining_disjoint",
+        "remaining_partition"
+      ],
+      "substituted_parameters": [
+        "remaining"
+      ]
+    }
+  ]
+}

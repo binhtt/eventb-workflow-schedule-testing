@@ -1,0 +1,4 @@
+requests,capacity,candidates,feasible,targeted,distinct_schedules_per_suite
+2,1,46,24,24,16
+4,2,140,112,112,16
+8,3,472,416,364,16

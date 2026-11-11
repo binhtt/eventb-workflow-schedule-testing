@@ -1,0 +1,14 @@
+{
+  "2/1": {
+    "first_schedule_audit_hits": 25,
+    "within_common_prefix": 24
+  },
+  "4/2": {
+    "first_schedule_audit_hits": 88,
+    "within_common_prefix": 88
+  },
+  "8/3": {
+    "first_schedule_audit_hits": 156,
+    "within_common_prefix": 155
+  }
+}

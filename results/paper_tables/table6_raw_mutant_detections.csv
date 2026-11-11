@@ -1,0 +1,10 @@
+id,mutant,Nominal,Nominal denominator,Random,Random denominator,Model-derived,Model-derived denominator,Conservative sleep-set DFS,Conservative sleep-set DFS denominator
+D1,reserve_cached,0,150,150,150,150,150,113,150
+D2,execute_cached,0,150,150,150,150,150,106,150
+D3,release_cached,0,150,150,150,150,150,85,150
+E1,reserve_lost_update,0,150,150,150,150,150,77,150
+E2,release_wrong_key,0,150,100,150,100,150,72,150
+E3,execute_after_release,0,150,146,150,150,150,47,150
+E4,execute_old_epoch,0,150,150,150,150,150,73,150
+E5,transfer_credit,150,150,150,150,150,150,123,150
+E6,ack_old_epoch,150,150,149,150,150,150,58,150

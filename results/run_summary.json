@@ -1,0 +1,30 @@
+{
+  "configurations": [
+    [
+      2,
+      1
+    ],
+    [
+      4,
+      2
+    ],
+    [
+      8,
+      3
+    ]
+  ],
+  "seed_count": 50,
+  "budget": 16,
+  "methods": [
+    "nominal",
+    "random",
+    "model_conflicts",
+    "canonical_independence"
+  ],
+  "clean_replays": 9600,
+  "mutant_replays": 86400,
+  "elapsed_seconds": 155.1144162950004,
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "model_sha256": "3106908be47025152a08e1ea65438f884af7ae0b9d718b6b0c84e0bab0105941"
+}

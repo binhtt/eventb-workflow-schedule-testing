@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.scContextFile org.eventb.core.accurate="true" org.eventb.core.configuration="org.eventb.core.fwd">
+    <org.eventb.core.scAxiom name="'" org.eventb.core.label="finite_requests" org.eventb.core.predicate="finite(REQ)" org.eventb.core.source="/SharedWorkflow/Pool.buc|org.eventb.core.contextFile#Pool|org.eventb.core.axiom#finite_requests" org.eventb.core.theorem="false"/>
+    <org.eventb.core.scAxiom name="(" org.eventb.core.label="positive_capacity" org.eventb.core.predicate="CAP∈ℕ1" org.eventb.core.source="/SharedWorkflow/Pool.buc|org.eventb.core.contextFile#Pool|org.eventb.core.axiom#positive_capacity" org.eventb.core.theorem="false"/>
+    <org.eventb.core.scConstant name="CAP" org.eventb.core.source="/SharedWorkflow/Pool.buc|org.eventb.core.contextFile#Pool|org.eventb.core.constant#capacity" org.eventb.core.type="ℤ"/>
+    <org.eventb.core.scCarrierSet name="REQ" org.eventb.core.source="/SharedWorkflow/Pool.buc|org.eventb.core.contextFile#Pool|org.eventb.core.carrierSet#requests" org.eventb.core.type="ℙ(REQ)"/>
+</org.eventb.core.scContextFile>

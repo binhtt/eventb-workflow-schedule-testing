@@ -1,0 +1,12 @@
+{'requests': 2, 'capacity': 1, 'method': 'nominal', 'median_generation_ms': 0.04535049993137363, 'median_clean_suite_replay_ms': 26.682984000217402, 'median_end_to_end_suite_ms': 26.727756000127556}
+{'requests': 2, 'capacity': 1, 'method': 'random', 'median_generation_ms': 1.4010704999236623, 'median_clean_suite_replay_ms': 25.024091500654322, 'median_end_to_end_suite_ms': 26.38799350052068}
+{'requests': 2, 'capacity': 1, 'method': 'model_conflicts', 'median_generation_ms': 5.400298000040493, 'median_clean_suite_replay_ms': 26.879037499838887, 'median_end_to_end_suite_ms': 33.29808599937678}
+{'requests': 2, 'capacity': 1, 'method': 'canonical_independence', 'median_generation_ms': 0.3008994999618153, 'median_clean_suite_replay_ms': 25.82273050029471, 'median_end_to_end_suite_ms': 26.34117350089582}
+{'requests': 4, 'capacity': 2, 'method': 'nominal', 'median_generation_ms': 0.0687760007167526, 'median_clean_suite_replay_ms': 50.34141150008509, 'median_end_to_end_suite_ms': 50.410165499670256}
+{'requests': 4, 'capacity': 2, 'method': 'random', 'median_generation_ms': 4.807283499758341, 'median_clean_suite_replay_ms': 46.11865749984645, 'median_end_to_end_suite_ms': 51.38018050001847}
+{'requests': 4, 'capacity': 2, 'method': 'model_conflicts', 'median_generation_ms': 16.58705599993482, 'median_clean_suite_replay_ms': 48.35499600039839, 'median_end_to_end_suite_ms': 64.5697149998341}
+{'requests': 4, 'capacity': 2, 'method': 'canonical_independence', 'median_generation_ms': 0.8542565001334879, 'median_clean_suite_replay_ms': 50.427273500190495, 'median_end_to_end_suite_ms': 51.42874850071166}
+{'requests': 8, 'capacity': 3, 'method': 'nominal', 'median_generation_ms': 0.10980799970639055, 'median_clean_suite_replay_ms': 101.93502699985402, 'median_end_to_end_suite_ms': 102.04190300009941}
+{'requests': 8, 'capacity': 3, 'method': 'random', 'median_generation_ms': 18.800185000145575, 'median_clean_suite_replay_ms': 92.55368850017476, 'median_end_to_end_suite_ms': 109.9518084997726}
+{'requests': 8, 'capacity': 3, 'method': 'model_conflicts', 'median_generation_ms': 62.32874500028629, 'median_clean_suite_replay_ms': 93.76409450032952, 'median_end_to_end_suite_ms': 155.929185500554}
+{'requests': 8, 'capacity': 3, 'method': 'canonical_independence', 'median_generation_ms': 2.19502849950004, 'median_clean_suite_replay_ms': 97.67387500050972, 'median_end_to_end_suite_ms': 99.5967305002523}
