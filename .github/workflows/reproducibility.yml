@@ -1,0 +1,67 @@
+name: Reproducibility
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_full:
+        description: Run the complete Python experiment and compare recorded results
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Python smoke and recorded-artifact audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Check recorded evidence
+        run: python scripts/verify_artifact.py
+      - name: Check recorded supplemental evidence
+        run: python scripts/supplemental/verify_review.py
+      - name: Export manuscript table data
+        run: python scripts/export_paper_results.py --output outputs/ci-paper-tables
+      - name: Run isolated smoke experiment
+        run: python code/reproduce.py --mode smoke --output outputs/ci-smoke
+      - name: Upload smoke logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-${{ matrix.python-version }}
+          path: outputs/ci-smoke/
+          if-no-files-found: ignore
+
+  full:
+    name: Full Python reproduction
+    if: github.event_name == 'workflow_dispatch' && inputs.run_full
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python code/reproduce.py --mode full --output outputs/ci-full
+      - name: Reproduce supplemental experiments
+        run: make supplemental
+      - name: Upload reproduction logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-reproduction
+          path: |
+            outputs/ci-full/
+            outputs/supplemental/
+          if-no-files-found: ignore
