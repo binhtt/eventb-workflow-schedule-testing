@@ -1,0 +1,14 @@
+* text=auto eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.csv -text
+*.bum -text
+*.buc -text
+*.bcm -text
+*.bcc -text
+*.bpo -text
+*.bpr -text
+*.bps -text
+*.json -text
+*.log -text
+*.zip binary

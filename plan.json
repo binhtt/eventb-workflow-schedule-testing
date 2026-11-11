@@ -1,0 +1,47 @@
+{
+  "study": "shared-capacity dispatch workflow",
+  "development_faults": [
+    "reserve_cached",
+    "execute_cached",
+    "release_cached"
+  ],
+  "evaluation_faults": [
+    "reserve_lost_update",
+    "release_wrong_key",
+    "execute_after_release",
+    "execute_old_epoch",
+    "transfer_credit",
+    "ack_old_epoch"
+  ],
+  "configurations": [
+    [
+      2,
+      1
+    ],
+    [
+      4,
+      2
+    ],
+    [
+      8,
+      3
+    ]
+  ],
+  "seeds": 50,
+  "budgets": [
+    1,
+    2,
+    4,
+    8,
+    16
+  ],
+  "methods": [
+    "nominal",
+    "random",
+    "model_conflicts",
+    "canonical_independence"
+  ],
+  "time": "logical scheduling hooks, no real-time deadlines",
+  "split": "mutant implementations are constructed in this study; evaluation labels are excluded from generator and model files; no independent author or external benchmark",
+  "constraints": "request reserve and retry attempts, execution attempts, handoff, acknowledgement, release and expiry each have fixed within-request predecessors"
+}

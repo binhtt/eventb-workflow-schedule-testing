@@ -1,0 +1,3 @@
+# Python 3.10+ with sqlite3 from the standard library.
+# The Python experiments require no third-party packages.
+# Native proof replay additionally requires Rodin 3.9 and Atelier B provers.

@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "Please cite this software artifact if you use its models, implementation, or data."
+type: software
+title: "Formal Verification and Schedule-Based Testing of Multi-Agent Workflows"
+version: 0.2.0
+date-released: 2026-11-07
+authors:
+  - family-names: Trinh
+    given-names: Thanh-Binh
+    orcid: "https://orcid.org/0009-0008-0434-1255"
+license: MIT
+abstract: >-
+  Reproducible research artifact combining Event-B shared-resource models,
+  native Rodin proof artifacts, model-derived scheduling objectives,
+  a separate SQLite implementation, and paired mutation experiments.
