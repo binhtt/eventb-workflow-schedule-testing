@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='utf-8'?>
+<org.eventb.core.machineFile version="5" org.eventb.core.configuration="org.eventb.core.fwd">
+  <org.eventb.core.seesContext name="context" org.eventb.core.target="Pool" />
+  <org.eventb.core.variable name="free" org.eventb.core.identifier="free" />
+  <org.eventb.core.variable name="held" org.eventb.core.identifier="held" />
+  <org.eventb.core.variable name="closed" org.eventb.core.identifier="closed" />
+  <org.eventb.core.variable name="moved" org.eventb.core.identifier="moved" />
+  <org.eventb.core.variable name="effected" org.eventb.core.identifier="effected" />
+  <org.eventb.core.variable name="acked" org.eventb.core.identifier="acked" />
+  <org.eventb.core.invariant name="type_held" org.eventb.core.label="type_held" org.eventb.core.predicate="held ⊆ REQ" org.eventb.core.theorem="false" />
+  <org.eventb.core.invariant name="type_closed" org.eventb.core.label="type_closed" org.eventb.core.predicate="closed ⊆ REQ" org.eventb.core.theorem="false" />
+  <org.eventb.core.invariant name="type_moved" org.eventb.core.label="type_moved" org.eventb.core.predicate="moved ⊆ REQ" org.eventb.core.theorem="false" />
+  <org.eventb.core.invariant name="type_effected" org.eventb.core.label="type_effected" org.eventb.core.predicate="effected ⊆ REQ" org.eventb.core.theorem="false" />
+  <org.eventb.core.invariant name="type_acked" org.eventb.core.label="type_acked" org.eventb.core.predicate="acked ⊆ REQ" org.eventb.core.theorem="false" />
+  <org.eventb.core.invariant name="free_nonnegative" org.eventb.core.label="free_nonnegative" org.eventb.core.predicate="free ∈ ℕ" org.eventb.core.theorem="false" />
+  <org.eventb.core.invariant name="conservation" org.eventb.core.label="conservation" org.eventb.core.predicate="free + card(held) = CAP" org.eventb.core.theorem="false" />
+  <org.eventb.core.invariant name="closed_not_held" org.eventb.core.label="closed_not_held" org.eventb.core.predicate="held ∩ closed = ∅" org.eventb.core.theorem="false" />
+  <org.eventb.core.invariant name="ack_after_effect" org.eventb.core.label="ack_after_effect" org.eventb.core.predicate="acked ⊆ effected" org.eventb.core.theorem="false" />
+  <org.eventb.core.event name="initialise" org.eventb.core.label="INITIALISATION" org.eventb.core.convergence="0" org.eventb.core.extended="false">
+    <org.eventb.core.action name="free" org.eventb.core.label="free" org.eventb.core.assignment="free ≔ CAP" />
+    <org.eventb.core.action name="held" org.eventb.core.label="held" org.eventb.core.assignment="held ≔ ∅" />
+    <org.eventb.core.action name="closed" org.eventb.core.label="closed" org.eventb.core.assignment="closed ≔ ∅" />
+    <org.eventb.core.action name="moved" org.eventb.core.label="moved" org.eventb.core.assignment="moved ≔ ∅" />
+    <org.eventb.core.action name="effected" org.eventb.core.label="effected" org.eventb.core.assignment="effected ≔ ∅" />
+    <org.eventb.core.action name="acked" org.eventb.core.label="acked" org.eventb.core.assignment="acked ≔ ∅" />
+  </org.eventb.core.event>
+  <org.eventb.core.event name="Reserve" org.eventb.core.label="Reserve" org.eventb.core.convergence="0" org.eventb.core.extended="false">
+    <org.eventb.core.parameter name="request" org.eventb.core.identifier="r" />
+    <org.eventb.core.guard name="g0" org.eventb.core.label="g0" org.eventb.core.predicate="r ∈ REQ" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g1" org.eventb.core.label="g1" org.eventb.core.predicate="r ∉ held" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g2" org.eventb.core.label="g2" org.eventb.core.predicate="r ∉ closed" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g3" org.eventb.core.label="g3" org.eventb.core.predicate="free &gt; 0" org.eventb.core.theorem="false" />
+    <org.eventb.core.action name="held" org.eventb.core.label="held" org.eventb.core.assignment="held ≔ held ∪ {r}" />
+    <org.eventb.core.action name="free" org.eventb.core.label="free" org.eventb.core.assignment="free ≔ free − 1" />
+  </org.eventb.core.event>
+  <org.eventb.core.event name="Execute" org.eventb.core.label="Execute" org.eventb.core.convergence="0" org.eventb.core.extended="false">
+    <org.eventb.core.parameter name="request" org.eventb.core.identifier="r" />
+    <org.eventb.core.parameter name="epoch" org.eventb.core.identifier="v" />
+    <org.eventb.core.guard name="g0" org.eventb.core.label="g0" org.eventb.core.predicate="r ∈ REQ" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g1" org.eventb.core.label="g1" org.eventb.core.predicate="v ∈ {0, 1}" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g2" org.eventb.core.label="g2" org.eventb.core.predicate="r ∈ held" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g3" org.eventb.core.label="g3" org.eventb.core.predicate="r ∉ effected" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g4" org.eventb.core.label="g4" org.eventb.core.predicate="(r ∈ moved ⇒ v = 1)" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g5" org.eventb.core.label="g5" org.eventb.core.predicate="(r ∉ moved ⇒ v = 0)" org.eventb.core.theorem="false" />
+    <org.eventb.core.action name="effected" org.eventb.core.label="effected" org.eventb.core.assignment="effected ≔ effected ∪ {r}" />
+  </org.eventb.core.event>
+  <org.eventb.core.event name="Transfer" org.eventb.core.label="Transfer" org.eventb.core.convergence="0" org.eventb.core.extended="false">
+    <org.eventb.core.parameter name="request" org.eventb.core.identifier="r" />
+    <org.eventb.core.guard name="g0" org.eventb.core.label="g0" org.eventb.core.predicate="r ∈ REQ" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g1" org.eventb.core.label="g1" org.eventb.core.predicate="r ∈ held" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g2" org.eventb.core.label="g2" org.eventb.core.predicate="r ∉ moved" org.eventb.core.theorem="false" />
+    <org.eventb.core.action name="moved" org.eventb.core.label="moved" org.eventb.core.assignment="moved ≔ moved ∪ {r}" />
+  </org.eventb.core.event>
+  <org.eventb.core.event name="Acknowledge" org.eventb.core.label="Acknowledge" org.eventb.core.convergence="0" org.eventb.core.extended="false">
+    <org.eventb.core.parameter name="request" org.eventb.core.identifier="r" />
+    <org.eventb.core.parameter name="epoch" org.eventb.core.identifier="v" />
+    <org.eventb.core.guard name="g0" org.eventb.core.label="g0" org.eventb.core.predicate="r ∈ REQ" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g1" org.eventb.core.label="g1" org.eventb.core.predicate="v ∈ {0, 1}" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g2" org.eventb.core.label="g2" org.eventb.core.predicate="r ∈ effected" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g3" org.eventb.core.label="g3" org.eventb.core.predicate="(r ∈ moved ⇒ v = 1)" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g4" org.eventb.core.label="g4" org.eventb.core.predicate="(r ∉ moved ⇒ v = 0)" org.eventb.core.theorem="false" />
+    <org.eventb.core.action name="acked" org.eventb.core.label="acked" org.eventb.core.assignment="acked ≔ acked ∪ {r}" />
+  </org.eventb.core.event>
+  <org.eventb.core.event name="Release" org.eventb.core.label="Release" org.eventb.core.convergence="0" org.eventb.core.extended="false">
+    <org.eventb.core.parameter name="request" org.eventb.core.identifier="r" />
+    <org.eventb.core.guard name="g0" org.eventb.core.label="g0" org.eventb.core.predicate="r ∈ REQ" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g1" org.eventb.core.label="g1" org.eventb.core.predicate="r ∈ held" org.eventb.core.theorem="false" />
+    <org.eventb.core.action name="held" org.eventb.core.label="held" org.eventb.core.assignment="held ≔ held ∖ {r}" />
+    <org.eventb.core.action name="closed" org.eventb.core.label="closed" org.eventb.core.assignment="closed ≔ closed ∪ {r}" />
+    <org.eventb.core.action name="free" org.eventb.core.label="free" org.eventb.core.assignment="free ≔ free + 1" />
+  </org.eventb.core.event>
+  <org.eventb.core.event name="Expire" org.eventb.core.label="Expire" org.eventb.core.convergence="0" org.eventb.core.extended="false">
+    <org.eventb.core.parameter name="request" org.eventb.core.identifier="r" />
+    <org.eventb.core.guard name="g0" org.eventb.core.label="g0" org.eventb.core.predicate="r ∈ REQ" org.eventb.core.theorem="false" />
+    <org.eventb.core.guard name="g1" org.eventb.core.label="g1" org.eventb.core.predicate="r ∈ held" org.eventb.core.theorem="false" />
+    <org.eventb.core.action name="held" org.eventb.core.label="held" org.eventb.core.assignment="held ≔ held ∖ {r}" />
+    <org.eventb.core.action name="closed" org.eventb.core.label="closed" org.eventb.core.assignment="closed ≔ closed ∪ {r}" />
+    <org.eventb.core.action name="free" org.eventb.core.label="free" org.eventb.core.assignment="free ≔ free + 1" />
+  </org.eventb.core.event>
+</org.eventb.core.machineFile>

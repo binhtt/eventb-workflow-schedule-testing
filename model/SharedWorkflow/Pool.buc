@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<org.eventb.core.contextFile version="3" org.eventb.core.configuration="org.eventb.core.fwd">
+  <org.eventb.core.carrierSet name="requests" org.eventb.core.identifier="REQ" />
+  <org.eventb.core.constant name="capacity" org.eventb.core.identifier="CAP" />
+  <org.eventb.core.axiom name="finite_requests" org.eventb.core.label="finite_requests" org.eventb.core.predicate="finite(REQ)" org.eventb.core.theorem="false" />
+  <org.eventb.core.axiom name="positive_capacity" org.eventb.core.label="positive_capacity" org.eventb.core.predicate="CAP ∈ ℕ1" org.eventb.core.theorem="false" />
+</org.eventb.core.contextFile>

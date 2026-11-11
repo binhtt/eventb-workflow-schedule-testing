@@ -1,0 +1,11 @@
+{
+  "paper_title": "Formal Verification and Schedule-Based Testing of Multi-Agent Workflows",
+  "artifact_version": "0.2.0",
+  "recorded_study_date": "2026-11-06",
+  "original_archive": "Multi_Agent_Workflow_Extended_Experiments.zip",
+  "original_archive_sha256": "a8b91e3557ea354b6f1a704a8da1bd017f3587e78d3270faf3ff0943cc9b8220",
+  "core_modules": "Preserved from the recorded experiment; repository wrapper and integrity checks were added.",
+  "native_launcher_origin": "https://github.com/eventb-rossi/rodin-headless",
+  "native_launcher_commit": "c5e91ab55f9862bd3bd064d235db0bb612577616",
+  "publication_status": "Research artifact for a manuscript; no journal acceptance or DOI is asserted."
+}

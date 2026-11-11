@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-06",
+  "python_version": "3.12.14",
+  "recorded_artifact_audit": "passed",
+  "local_smoke_entry_point": "passed",
+  "analysis_recomputation": "passed; deterministic tables match the recorded results",
+  "full_entry_point": "passed; deterministic trials, tables, finite-state counts and schedule digest match",
+  "main_full_reference_replays": 9600,
+  "main_full_mutant_replays": 86400,
+  "separate_timing_reference_replays": 5760,
+  "output_reuse_protection": "passed; existing output refused and recorded trials unchanged",
+  "metadata_checks": "workflow YAML, CFF fields, Markdown file targets, and bash syntax passed",
+  "native_proof_artifacts": "24 discharged native proof trees/statuses audited; original clean Rodin run is included",
+  "github_actions_execution": "workflow definition supplied; no remote Actions run was performed during local packaging",
+  "github_publishing": "script syntax checked; live authenticated repository creation requires a connected account",
+  "release_recheck_2026_11_07": {
+    "recorded_artifact_audit": "passed before packaging edits",
+    "smoke_entry_point": "passed",
+    "analysis_recomputation": "passed; deterministic analysis matches recorded data",
+    "paper_table_export": "passed; exports native proofs, finite conformance, all mutants, qualified detections, witness prefix, detection curve, bootstrap and timing data",
+    "native_rodin_reexecution": "not rerun in this release check; saved native proof artifacts audited",
+    "github_publishing": "not performed; GitHub connection unavailable in this session"
+  }
+}
