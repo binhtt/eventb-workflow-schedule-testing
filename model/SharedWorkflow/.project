@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription><name>SharedWorkflow</name><comment></comment><projects/>
+<buildSpec><buildCommand><name>org.rodinp.core.rodinbuilder</name><arguments/></buildCommand></buildSpec>
+<natures><nature>org.rodinp.core.rodinnature</nature></natures></projectDescription>
