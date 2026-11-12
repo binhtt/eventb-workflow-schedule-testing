@@ -1,6 +1,6 @@
 {
-  "supplied_manuscript": "IEEE_ACCESS_Agent (13)(1).pdf",
-  "sha256": "60ed60d1df9adbfab59578397599500d5d14ce45cb2fb97ab2a76c2e5ffd8c33",
+  "supplied_manuscript": "IEEE_ACCESS_Agent.pdf",
+  "sha256": "f05e017eabd3e5792606c0f504ab4f4ca79492e0813496c123a6ec58795dbde5",
   "checked_date": "2026-11-12",
   "matches": {
     "proof_obligations": 24,
